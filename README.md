@@ -1,4 +1,4 @@
-Bomberman: Reboot
+# Bomberman: Reboot
 
 Description: 
  Bomberman is a classic, 2D game involving a player versus 3 AI characters. The goal is to be the last one standing at the end. Use bombs to eliminate the other players while dodging the explosions.
