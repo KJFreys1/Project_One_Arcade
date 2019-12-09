@@ -8,6 +8,7 @@ body {
 }
 
 #game-board {
+    background-color: green;
     width: 375px;
     height: 375px;
     margin: auto;
@@ -33,4 +34,24 @@ body {
 .grass {
     background-color: green;
     border: 1px solid green;
+}
+
+.bomb-black {
+    background-color: black;
+    border-radius: 100%;
+}
+
+.bomb-red {
+    background-color: red;
+    border-radius: 100%;
+}
+
+.fire {
+    background-color: orange;
+    border: 1px solid orange;
+}
+
+img {
+    height: 25px;
+    width: 25px;
 }
