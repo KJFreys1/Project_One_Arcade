@@ -5,7 +5,6 @@ let brick = []
 let willBrick
 let player
 let playerBombs = [true, true]
-let playerBombIndex = [0, 1]
 let direction = 'down'
 let animation = 1
 let playerSprite = document.createElement('img')
@@ -15,13 +14,14 @@ let yPos = 1
 let bombX
 let bombY
 let isFire = []
+let playerDead = false
 
 class Bomb {
-    constructor (index, x, y) {
-        this.index = index
+    constructor (x, y) {
         this.bombX = x
         this.bombY = y
         this.fire = []
+        this.fireIndex = 0
     }
 
     placeBomb() {
@@ -41,25 +41,43 @@ class Bomb {
     bombExplode () {
         boxes[this.bombY][this.bombX].classList.remove('bomb-black')
         this.fire.push(boxes[this.bombY][this.bombX])
+        isFire.push([this.bombY, this.bombX])
+        this.fireIndex++
         if (stone[this.bombY-1][this.bombX] == false) {
+            isFire.push([this.bombY-1, this.bombX])
             this.fire.push(boxes[this.bombY-1][this.bombX])
+            this.fireIndex++
             if (stone[this.bombY-2][this.bombX] == false) {
+                isFire.push([this.bombY-2, this.bombX])
                 this.fire.push(boxes[this.bombY-2][this.bombX])
+                this.fireIndex++
             }
         } if (stone[this.bombY+1][this.bombX] == false) {
+            isFire.push([this.bombY+1, this.bombX])
             this.fire.push(boxes[this.bombY+1][this.bombX])
+            this.fireIndex++
             if (stone[this.bombY+2][this.bombX] == false) {
+                isFire.push([this.bombY+2, this.bombX])
                 this.fire.push(boxes[this.bombY+2][this.bombX])
+                this.fireIndex++
             }
         } if (stone[this.bombY][this.bombX+1] == false) {
+            isFire.push([this.bombY, this.bombX+1])
             this.fire.push(boxes[this.bombY][this.bombX+1])
+            this.fireIndex++
             if (stone[this.bombY][this.bombX+2] == false) {
+                isFire.push([this.bombY, this.bombX+2])
                 this.fire.push(boxes[this.bombY][this.bombX+2])
+                this.fireIndex++
             }
         } if (stone[this.bombY][this.bombX-1] == false) {
+            isFire.push([this.bombY, this.bombX-1])
             this.fire.push(boxes[this.bombY][this.bombX-1])
+            this.fireIndex++
             if (stone[this.bombY][this.bombX-2] == false) {
+                isFire.push([this.bombY, this.bombX-2])
                 this.fire.push(boxes[this.bombY][this.bombX-2])
+                this.fireIndex++
             }
         }
     }
@@ -68,6 +86,7 @@ class Bomb {
         for (let f = 0; f < this.fire.length; f++) {
             this.fire[f].classList.add('fire')
         }
+        checkForFire()
     }
 
     removeFire () {
@@ -76,6 +95,9 @@ class Bomb {
         }
         playerBombs.push(true)
         playerBombs.shift()
+        for (let q = 0; q < this.fireIndex; q++) {
+            isFire.shift()
+        }
     }
 }
 
@@ -157,35 +179,56 @@ function createBoard () {
     player.appendChild(playerSprite)
 }
 
-function movePlayer () {
-    if (direction == 'w') {
-        direction = 'up'
-        if (!stone[yPos-1][xPos] && !brick[yPos-1][xPos]) {
-            yPos--
-            setAnimatePlayer()
-        }
-    } else if (direction == 's') {
-        direction = 'down'
-        if (!stone[yPos+1][xPos] && !brick[yPos+1][xPos]) {
-            yPos++
-            setAnimatePlayer()
-        }
-    } else if(direction == 'a') {
-        direction = 'left'
-        if (!stone[yPos][xPos-1] && !brick[yPos][xPos-1]) {
-            xPos--
-            setAnimatePlayer()
-        }
-    } else if (direction == 'd') {
-        direction = 'right'
-        if (!stone[yPos][xPos+1] && !brick[yPos][xPos+1]) {
-            xPos++
-            setAnimatePlayer()
+function checkForFire () {
+    for (let check = 0; check < isFire.length; check++) {
+        if (yPos == isFire[check][0] && xPos == isFire[check][1]) {
+            playerDead = true
         }
     }
-    player.removeChild(playerSprite)
-    player = boxes[yPos][xPos]
-    player.appendChild(playerSprite)
+    if (playerDead == true) {
+        console.log('dead')
+    }
+}
+
+function movePlayer () {
+    if (!playerDead) {
+        if (direction == 'w') {
+            direction = 'up'
+            if (!stone[yPos-1][xPos] && !brick[yPos-1][xPos]) {
+                yPos--
+                setAnimatePlayer()
+            } else {
+                playerSprite.src = `sprites/white-sprite/white_${direction}/white-standing-${direction}.png`
+            }
+        } else if (direction == 's') {
+            direction = 'down'
+            if (!stone[yPos+1][xPos] && !brick[yPos+1][xPos]) {
+                yPos++
+                setAnimatePlayer()
+            } else {
+                playerSprite.src = `sprites/white-sprite/white_${direction}/white-standing-${direction}.png`
+            }
+        } else if(direction == 'a') {
+            direction = 'left'
+            if (!stone[yPos][xPos-1] && !brick[yPos][xPos-1]) {
+                xPos--
+                setAnimatePlayer()
+            } else {
+                playerSprite.src = `sprites/white-sprite/white_${direction}/white-standing-${direction}.png`
+            }
+        } else if (direction == 'd') {
+            direction = 'right'
+            if (!stone[yPos][xPos+1] && !brick[yPos][xPos+1]) {
+                xPos++
+                setAnimatePlayer()
+            } else {
+                playerSprite.src = `sprites/white-sprite/white_${direction}/white-standing-${direction}.png`
+            }
+        }
+        player.removeChild(playerSprite)
+        player = boxes[yPos][xPos]
+        player.appendChild(playerSprite)
+    }
 }
 
 function setAnimatePlayer () {
@@ -216,7 +259,7 @@ document.addEventListener('keypress', evt => {
             player.removeChild(playerSprite)
             playerSprite.src = `sprites/white-sprite/white_${direction}/white-standing-${direction}.png`
             player.appendChild(playerSprite)
-            let newBomb = new Bomb(1, xPos, yPos)
+            let newBomb = new Bomb(xPos, yPos)
             newBomb.placeBomb()
             setTimeout(function () {newBomb.bombRed()}, 500)
             setTimeout(function () {newBomb.bombBlack()}, 1000)
