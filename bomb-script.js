@@ -7,6 +7,8 @@ let player
 let playerBombs = [true, true]
 let playerBombIndex = [0, 1]
 let direction
+let playerSprite = document.createElement('img')
+playerSprite.src = 'sprites/white-sprite/white_down/white-standing-down.png'
 let xPos = 1
 let yPos = 1
 let bombX
@@ -147,11 +149,8 @@ function createBoard () {
         brick.push(bricksRow)
     }
     player = boxes[yPos][xPos]
+    player.appendChild(playerSprite)
 }
-
-let img = document.createElement('img')
-img.src = 'sprites/white-sprite/white_down/white_standing1.png'
-player.appendChild(img)
 
 function movePlayer () {
     if (direction == 'w') {
@@ -170,9 +169,9 @@ function movePlayer () {
             xPos++
         }
     }
-    player.removeChild(img)
+    player.removeChild(playerSprite)
     player = boxes[yPos][xPos]
-    player.appendChild(img)
+    player.appendChild(playerSprite)
 }
 
 document.addEventListener('keypress', evt => {
