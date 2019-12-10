@@ -11,10 +11,9 @@ let playerSprite = document.createElement('img')
 playerSprite.src = 'sprites/white-sprite/white_down/white-standing-down.png'
 let xPos = 1
 let yPos = 1
-let bombX
-let bombY
 let isFire = []
 let playerDead = false
+let deathAnimationCount = 1
 
 class Bomb {
     constructor (x, y) {
@@ -43,38 +42,38 @@ class Bomb {
         this.fire.push(boxes[this.bombY][this.bombX])
         isFire.push([this.bombY, this.bombX])
         this.fireIndex++
-        if (stone[this.bombY-1][this.bombX] == false) {
+        if (!stone[this.bombY-1][this.bombX]) {
             isFire.push([this.bombY-1, this.bombX])
             this.fire.push(boxes[this.bombY-1][this.bombX])
             this.fireIndex++
-            if (stone[this.bombY-2][this.bombX] == false) {
+            if (!stone[this.bombY-2][this.bombX] && !brick[this.bombY-1][this.bombX]) {
                 isFire.push([this.bombY-2, this.bombX])
                 this.fire.push(boxes[this.bombY-2][this.bombX])
                 this.fireIndex++
             }
-        } if (stone[this.bombY+1][this.bombX] == false) {
+        } if (!stone[this.bombY+1][this.bombX]) {
             isFire.push([this.bombY+1, this.bombX])
             this.fire.push(boxes[this.bombY+1][this.bombX])
             this.fireIndex++
-            if (stone[this.bombY+2][this.bombX] == false) {
+            if (!stone[this.bombY+2][this.bombX] && !brick[this.bombY+1][this.bombX]) {
                 isFire.push([this.bombY+2, this.bombX])
                 this.fire.push(boxes[this.bombY+2][this.bombX])
                 this.fireIndex++
             }
-        } if (stone[this.bombY][this.bombX+1] == false) {
+        } if (!stone[this.bombY][this.bombX+1]) {
             isFire.push([this.bombY, this.bombX+1])
             this.fire.push(boxes[this.bombY][this.bombX+1])
             this.fireIndex++
-            if (stone[this.bombY][this.bombX+2] == false) {
+            if (!stone[this.bombY][this.bombX+2] && !brick[this.bombY][this.bombX+1]) {
                 isFire.push([this.bombY, this.bombX+2])
                 this.fire.push(boxes[this.bombY][this.bombX+2])
                 this.fireIndex++
             }
-        } if (stone[this.bombY][this.bombX-1] == false) {
+        } if (!stone[this.bombY][this.bombX-1]) {
             isFire.push([this.bombY, this.bombX-1])
             this.fire.push(boxes[this.bombY][this.bombX-1])
             this.fireIndex++
-            if (stone[this.bombY][this.bombX-2] == false) {
+            if (!stone[this.bombY][this.bombX-2] && !brick[this.bombY][this.bombX-1]) {
                 isFire.push([this.bombY, this.bombX-2])
                 this.fire.push(boxes[this.bombY][this.bombX-2])
                 this.fireIndex++
@@ -93,6 +92,7 @@ class Bomb {
         for (let f = 0; f < this.fire.length; f++) {
             this.fire[f].classList.remove('fire')
         }
+        checkForFire()
         playerBombs.push(true)
         playerBombs.shift()
         for (let q = 0; q < this.fireIndex; q++) {
@@ -181,12 +181,31 @@ function createBoard () {
 
 function checkForFire () {
     for (let check = 0; check < isFire.length; check++) {
-        if (yPos == isFire[check][0] && xPos == isFire[check][1]) {
+        let fireY = isFire[check][0]
+        let fireX = isFire[check][1]
+        if (yPos == fireY && xPos == fireX) {
             playerDead = true
+        }
+        if (brick[fireY][fireX]) {
+            brick[fireY][fireX] = false
+            boxes[fireY][fireX].classList.remove('brick')
+            boxes[fireY][fireX].classList.add('grass')
         }
     }
     if (playerDead == true) {
-        console.log('dead')
+        killPlayer()
+    }
+}
+
+function killPlayer () {
+    if (deathAnimationCount <= 8) {
+        player.removeChild(playerSprite)
+        playerSprite.src = `sprites/white-sprite/white_death/white-death${deathAnimationCount}.png`
+        player.appendChild(playerSprite)
+        deathAnimationCount++
+        setTimeout(killPlayer, 200)
+    } else {
+        player.removeChild(playerSprite)
     }
 }
 
@@ -267,7 +286,7 @@ document.addEventListener('keypress', evt => {
             setTimeout(function () {newBomb.bombBlack()}, 2000)
             setTimeout(function () {newBomb.bombExplode()}, 2500)
             setTimeout(function () {newBomb.addFire()}, 2500)
-            setTimeout(function () {newBomb.removeFire()}, 3200)
+            setTimeout(function () {newBomb.removeFire()}, 2850)
         }
     }
 })
