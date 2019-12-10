@@ -6,7 +6,7 @@ let willBrick
 let player
 let playerBombs = [true, true]
 let playerBombIndex = [0, 1]
-let direction
+let direction = 'down'
 let animation = 1
 let playerSprite = document.createElement('img')
 playerSprite.src = 'sprites/white-sprite/white_down/white-standing-down.png'
@@ -14,6 +14,7 @@ let xPos = 1
 let yPos = 1
 let bombX
 let bombY
+let isFire = []
 
 class Bomb {
     constructor (index, x, y) {
@@ -25,11 +26,9 @@ class Bomb {
 
     placeBomb() {
         boxes[this.bombY][this.bombX].classList.add('bomb-black')
-        console.log(this.bombX)
     }
 
     bombRed () {
-        console.log(this.bombX)
         boxes[this.bombY][this.bombX].classList.remove('bomb-black')
         boxes[this.bombY][this.bombX].classList.add('bomb-red')
     }
@@ -63,21 +62,20 @@ class Bomb {
                 this.fire.push(boxes[this.bombY][this.bombX-2])
             }
         }
-        this.addFire
-        setTimeout(this.removeFire, 800)
-        
     }
     
     addFire () {
         for (let f = 0; f < this.fire.length; f++) {
-            this.fire.classList.add('fire')
+            this.fire[f].classList.add('fire')
         }
     }
 
     removeFire () {
         for (let f = 0; f < this.fire.length; f++) {
-            this.fire.classList.remove('fire')
+            this.fire[f].classList.remove('fire')
         }
+        playerBombs.push(true)
+        playerBombs.shift()
     }
 }
 
@@ -205,12 +203,28 @@ document.addEventListener('keypress', evt => {
         movePlayer()
     }
     if (evt.code == 'Space') {
-        let newBomb = new Bomb(1, xPos, yPos)
-        newBomb.placeBomb()
-        setTimeout(newBomb.bombRed, 500)
-        setTimeout(newBomb.bombBlack, 1000)
-        setTimeout(newBomb.bombRed, 1500)
-        setTimeout(newBomb.bombBlack, 2000)
-        setTimeout(newBomb.bombExplode, 2500)
+        let canBomb = false
+        for (let c = 0; c < playerBombs.length; c++) {
+            if (playerBombs[c]) {
+                canBomb = true
+                playerBombs.shift()
+                playerBombs.push(false)
+                c = playerBombs.length
+            }
+        }
+        if (canBomb == true) {
+            player.removeChild(playerSprite)
+            playerSprite.src = `sprites/white-sprite/white_${direction}/white-standing-${direction}.png`
+            player.appendChild(playerSprite)
+            let newBomb = new Bomb(1, xPos, yPos)
+            newBomb.placeBomb()
+            setTimeout(function () {newBomb.bombRed()}, 500)
+            setTimeout(function () {newBomb.bombBlack()}, 1000)
+            setTimeout(function () {newBomb.bombRed()}, 1500)
+            setTimeout(function () {newBomb.bombBlack()}, 2000)
+            setTimeout(function () {newBomb.bombExplode()}, 2500)
+            setTimeout(function () {newBomb.addFire()}, 2500)
+            setTimeout(function () {newBomb.removeFire()}, 3200)
+        }
     }
 })
