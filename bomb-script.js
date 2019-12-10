@@ -7,6 +7,7 @@ let player
 let playerBombs = [true, true]
 let playerBombIndex = [0, 1]
 let direction
+let animation = 1
 let playerSprite = document.createElement('img')
 playerSprite.src = 'sprites/white-sprite/white_down/white-standing-down.png'
 let xPos = 1
@@ -119,18 +120,24 @@ function createBoard () {
                             newBox.classList.remove('grass')
                             newBox.classList.add('brick')
                             bricksRow.push(true)
+                        } else {
+                            bricksRow.push(false)
                         }
                     } else if ((row == 11 || row == 12) && col > 1 && col < 13) {
                         if (!stoneRow[col]) {
                             newBox.classList.remove('grass')
                             newBox.classList.add('brick')
                             bricksRow.push(true)
+                        } else {
+                            bricksRow.push(false)
                         }
                     } else if (row > 3 && row < 11 && col > 0 && col < 14) {
                         if (!stoneRow[col]) {
                             newBox.classList.remove('grass')
                             newBox.classList.add('brick')
                             bricksRow.push(true)
+                        } else {
+                            bricksRow.push(false)
                         }
                     } else {
                         bricksRow.push(false)
@@ -154,24 +161,42 @@ function createBoard () {
 
 function movePlayer () {
     if (direction == 'w') {
+        direction = 'up'
         if (!stone[yPos-1][xPos] && !brick[yPos-1][xPos]) {
             yPos--
+            setAnimatePlayer()
         }
     } else if (direction == 's') {
+        direction = 'down'
         if (!stone[yPos+1][xPos] && !brick[yPos+1][xPos]) {
-            yPos++        }
+            yPos++
+            setAnimatePlayer()
+        }
     } else if(direction == 'a') {
+        direction = 'left'
         if (!stone[yPos][xPos-1] && !brick[yPos][xPos-1]) {
             xPos--
+            setAnimatePlayer()
         }
     } else if (direction == 'd') {
+        direction = 'right'
         if (!stone[yPos][xPos+1] && !brick[yPos][xPos+1]) {
             xPos++
+            setAnimatePlayer()
         }
     }
     player.removeChild(playerSprite)
     player = boxes[yPos][xPos]
     player.appendChild(playerSprite)
+}
+
+function setAnimatePlayer () {
+    if (animation == 1) {
+        animation = 2
+    } else {
+        animation = 1
+    }
+    playerSprite.src = `sprites/white-sprite/white_${direction}/white-walking-${direction}${animation}.png`
 }
 
 document.addEventListener('keypress', evt => {
