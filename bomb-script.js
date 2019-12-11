@@ -7,6 +7,9 @@ let player
 let playerBombs = 2
 let isBomb = []
 let isSprite = []
+let isDanger = []
+let dangerIndex = []
+let dangerContainer = []
 let bombIndex = []
 let direction = 'down'
 let animation = 1
@@ -27,8 +30,45 @@ class Bomb {
         this.fireIndex = 0
     }
 
-    placeBomb() {
+    simulateExplosion () {
+        dangerIndex.push([this.bombY, this.bombX])
+        isDanger[this.bombY][this.bombX] = true
+        if (!stone[this.bombY-1][this.bombX]) {
+            dangerIndex.push([this.bombY-1, this.bombX])
+            isDanger[this.bombY-1][this.bombX] = true
+            if (!stone[this.bombY-2][this.bombX] && !brick[this.bombY-1][this.bombX]) {
+                dangerIndex.push([this.bombY-2, this.bombX])
+                isDanger[this.bombY-2][this.bombX] = true
+            }
+        } if (!stone[this.bombY+1][this.bombX]) {
+            dangerIndex.push([this.bombY+1, this.bombX])
+            isDanger[this.bombY+1][this.bombX] = true
+            if (!stone[this.bombY+2][this.bombX] && !brick[this.bombY+1][this.bombX]) {
+                dangerIndex.push([this.bombY+2, this.bombX])
+                isDanger[this.bombY+2][this.bombX] = true
+            }
+        } if (!stone[this.bombY][this.bombX+1]) {
+            dangerIndex.push([this.bombY, this.bombX+1])
+            isDanger[this.bombY][this.bombX+1] = true
+            if (!stone[this.bombY][this.bombX+2] && !brick[this.bombY][this.bombX+1]) {
+                dangerIndex.push([this.bombY, this.bombX+2])
+                isDanger[this.bombY][this.bombX+2] = true
+            }
+        } if (!stone[this.bombY][this.bombX-1]) {
+            dangerIndex.push([this.bombY, this.bombX-1])
+            isDanger[this.bombY][this.bombX-1] = true
+            if (!stone[this.bombY][this.bombX-2] && !brick[this.bombY][this.bombX-1]) {
+                dangerIndex.push([this.bombY, this.bombX-2])
+                isDanger[this.bombY][this.bombX-2] = true
+            }
+        }
+        dangerContainer.push(dangerIndex)
+        dangerIndex = []
+    }
+
+    placeBomb () {
         boxes[this.bombY][this.bombX].classList.add('bomb-black')
+        this.simulateExplosion()
     }
 
     bombRed () {
@@ -100,8 +140,12 @@ class Bomb {
         for (let q = 0; q < this.fireIndex; q++) {
             isFire.shift()
         }
+        for (let s = 0; s< dangerContainer[0].length; s++) {
+            isDanger[dangerContainer[0][s][0]][dangerContainer[0][s][1]] = false
+        }
         isBomb[bombIndex[0][0]][bombIndex[0][1]] = false
         bombIndex.shift()
+        dangerContainer.shift()
     }
 }
 
@@ -135,38 +179,75 @@ class Enemy {
         this.left = true
         this.right = true
         this.direction = Math.ceil(Math.random() * 4)
-        while(!this.canMove) {
-            if (this.direction == 1) {
-                if (stone[this.yPos-1][this.xPos] || brick[this.yPos-1][this.xPos] || isBomb[this.yPos-1][this.xPos] || isSprite[this.yPos-1][this.xPos]) {
-                    this.direction = Math.ceil(Math.random() * 4)
-                    this.up = false
+        if (!isDanger[this.yPos][this.xPos]) {
+            while(!this.canMove) {
+                if (this.direction == 1) {
+                    if (stone[this.yPos-1][this.xPos] || brick[this.yPos-1][this.xPos] || isBomb[this.yPos-1][this.xPos] || isSprite[this.yPos-1][this.xPos] || isDanger[this.yPos-1][this.xPos]) {
+                        this.direction = Math.ceil(Math.random() * 4)
+                        this.up = false
+                    } else {
+                        this.canMove = true
+                    }
+                } else if (this.direction == 2) {
+                    if (stone[this.yPos+1][this.xPos] || brick[this.yPos+1][this.xPos] || isBomb[this.yPos+1][this.xPos] || isSprite[this.yPos+1][this.xPos] || isDanger[this.yPos+1][this.xPos]) {
+                        this.direction = Math.ceil(Math.random() * 4)
+                        this.down = false
+                    } else {
+                        this.canMove = true
+                    }
+                } else if (this.direction == 3) {
+                    if (stone[this.yPos][this.xPos-1] || brick[this.yPos][this.xPos-1] || isBomb[this.yPos][this.xPos-1] || isSprite[this.yPos][this.xPos-1] || isDanger[this.yPos][this.xPos-1]) {
+                        this.direction = Math.ceil(Math.random() * 4)
+                        this.left = false
+                    } else {
+                        this.canMove = true
+                    }
                 } else {
-                    this.canMove = true
+                    if (stone[this.yPos][this.xPos+1] || brick[this.yPos][this.xPos+1] || isBomb[this.yPos][this.xPos+1] || isSprite[this.yPos][this.xPos+1] || isDanger[this.yPos][this.xPos+1]) {
+                        this.direction = Math.ceil(Math.random() * 4)
+                        this.right = false
+                    } else {
+                        this.canMove = true
+                    }
                 }
-            } else if (this.direction == 2) {
-                if (stone[this.yPos+1][this.xPos] || brick[this.yPos+1][this.xPos] || isBomb[this.yPos+1][this.xPos] || isSprite[this.yPos+1][this.xPos]) {
-                    this.direction = Math.ceil(Math.random() * 4)
-                    this.down = false
-                } else {
-                    this.canMove = true
-                }
-            } else if (this.direction == 3) {
-                if (stone[this.yPos][this.xPos-1] || brick[this.yPos][this.xPos-1] || isBomb[this.yPos][this.xPos-1] || isSprite[this.yPos][this.xPos-1]) {
-                    this.direction = Math.ceil(Math.random() * 4)
-                    this.left = false
-                } else {
-                    this.canMove = true
-                }
-            } else {
-                if (stone[this.yPos][this.xPos+1] || brick[this.yPos][this.xPos+1] || isBomb[this.yPos][this.xPos+1] || isSprite[this.yPos][this.xPos+1]) {
-                    this.direction = Math.ceil(Math.random() * 4)
-                    this.right = false
-                } else {
+                if (!this.right && !this.left && !this.down && !this.up) {
                     this.canMove = true
                 }
             }
-            if (!this.right && !this.left && !this.down && !this.up) {
-                this.canMove = true
+        } else {
+            while(!this.canMove) {
+                if (this.direction == 1) {
+                    if (stone[this.yPos-1][this.xPos] || brick[this.yPos-1][this.xPos] || isBomb[this.yPos-1][this.xPos] || isSprite[this.yPos-1][this.xPos]) {
+                        this.direction = Math.ceil(Math.random() * 4)
+                        this.up = false
+                    } else {
+                        this.canMove = true
+                    }
+                } else if (this.direction == 2) {
+                    if (stone[this.yPos+1][this.xPos] || brick[this.yPos+1][this.xPos] || isBomb[this.yPos+1][this.xPos] || isSprite[this.yPos+1][this.xPos]) {
+                        this.direction = Math.ceil(Math.random() * 4)
+                        this.down = false
+                    } else {
+                        this.canMove = true
+                    }
+                } else if (this.direction == 3) {
+                    if (stone[this.yPos][this.xPos-1] || brick[this.yPos][this.xPos-1] || isBomb[this.yPos][this.xPos-1] || isSprite[this.yPos][this.xPos-1]) {
+                        this.direction = Math.ceil(Math.random() * 4)
+                        this.left = false
+                    } else {
+                        this.canMove = true
+                    }
+                } else {
+                    if (stone[this.yPos][this.xPos+1] || brick[this.yPos][this.xPos+1] || isBomb[this.yPos][this.xPos+1] || isSprite[this.yPos][this.xPos+1]) {
+                        this.direction = Math.ceil(Math.random() * 4)
+                        this.right = false
+                    } else {
+                        this.canMove = true
+                    }
+                }
+                if (!this.right && !this.left && !this.down && !this.up) {
+                    this.canMove = true
+                }
             }
         }
         if (!this.right && !this.left && !this.down && !this.up) {
@@ -182,9 +263,9 @@ class Enemy {
 
     isTrapped () {
         if (isSprite[this.yPos][this.xPos+1] || isSprite[this.yPos][this.xPos-1] || isSprite[this.yPos+1][this.xPos] || isSprite[this.yPos-1][this.xPos]) {
-            setTimeout(() => {enemyOne.isTrapped()}, 500)
+            setTimeout(() => {this.isTrapped()}, 500)
         } else {
-            setTimeout(() => {enemyOne.randNumber()}, 200)
+            setTimeout(() => {this.randNumber()}, 200)
         }
     }
 
@@ -192,7 +273,7 @@ class Enemy {
         isSprite[this.yPos][this.xPos] = false
         if (this.direction == 1) {
             this.yPos--
-            this.placeBombDown()
+            // this.placeBombDown()
         } else if (this.direction == 2) {
             this.yPos++
         } else if (this.direction == 3) {
@@ -205,7 +286,7 @@ class Enemy {
         this.enemy = boxes[this.yPos][this.xPos]
         this.enemy.appendChild(this.sprite)
         if (!playerDead) {
-            setTimeout(function () {enemyOne.randNumber()}, 500)
+            setTimeout(() => {this.randNumber()}, 500)
         }
     }
 
@@ -245,6 +326,7 @@ function createBoard () {
         let bricksRow = []
         let bombRow = []
         let spriteRow = []
+        let dangerRow = []
         for (let col = 0; col < 15; col++) {
             willBrick = Math.ceil(Math.random() * 10)
             let newBox = document.createElement('div')
@@ -309,12 +391,14 @@ function createBoard () {
             boxesRow.push(newBox)
             bombRow.push(false)
             spriteRow.push(false)
+            dangerRow.push(false)
         }
         boxes.push(boxesRow)
         stone.push(stoneRow)
         brick.push(bricksRow)
         isBomb.push(bombRow)
         isSprite.push(spriteRow)
+        isDanger.push(dangerRow)
     }
     player = boxes[yPos][xPos]
     player.appendChild(playerSprite)
