@@ -17,6 +17,7 @@ let yPos = 1
 let isFire = []
 let playerDead = false
 let deathAnimationCount = 1
+let isDeadAnimation = false
 
 class Bomb {
     constructor (x, y) {
@@ -191,7 +192,7 @@ class Enemy {
         isSprite[this.yPos][this.xPos] = false
         if (this.direction == 1) {
             this.yPos--
-            // this.placeBombDown()
+            this.placeBombDown()
         } else if (this.direction == 2) {
             this.yPos++
         } else if (this.direction == 3) {
@@ -226,7 +227,7 @@ class Enemy {
             setTimeout(() => {newBomb.bombExplode()}, 2500)
             setTimeout(() => {newBomb.addFire()}, 2500)
             setTimeout(() => {newBomb.removeFire()}, 2850)
-            setTimeout(() => {enemyOne.canBombAgain()}, 2850)
+            setTimeout(() => {this.canBombAgain()}, 2850)
         }
     }
 
@@ -337,8 +338,11 @@ function checkForFire () {
             boxes[fireY][fireX].classList.add('grass')
         }
     }
-    if (playerDead == true) {
-        killPlayer()
+    if (playerDead) {
+        if (!isDeadAnimation) {
+            killPlayer()
+            isDeadAnimation = true
+        }
     }
 }
 
@@ -348,7 +352,7 @@ function killPlayer () {
         playerSprite.src = `sprites/white-sprite/white_death/white-death${deathAnimationCount}.png`
         player.appendChild(playerSprite)
         deathAnimationCount++
-        setTimeout(killPlayer, 200)
+        setTimeout(killPlayer, 100)
     } else {
         player.removeChild(playerSprite)
     }
