@@ -28,7 +28,7 @@ body {
     border-top: 1px solid white;
     border-right:  1px solid white;
     border-bottom:  1px solid black;
-    border-left: 1px solid black
+    border-left: 1px solid black;
 }
 
 .grass {
@@ -38,7 +38,10 @@ body {
 
 .brick {
     background-color: brown;
-    border: 1px solid brown;
+    border-top: 1px solid rgb(163, 111, 111);
+    border-right:  1px solid rgb(163, 111, 111);
+    border-bottom:  1px solid rgba(97, 13, 13);
+    border-left: 1px solid rgb(97, 13, 13);
 }
 
 .bomb-black {

@@ -4,7 +4,10 @@ let stone = []
 let brick = []
 let willBrick
 let player
-let playerBombs = [true, true]
+let playerBombs = 2
+let isBomb = []
+let isSprite = []
+let bombIndex = []
 let direction = 'down'
 let animation = 1
 let playerSprite = document.createElement('img')
@@ -93,11 +96,142 @@ class Bomb {
             this.fire[f].classList.remove('fire')
         }
         checkForFire()
-        playerBombs.push(true)
-        playerBombs.shift()
         for (let q = 0; q < this.fireIndex; q++) {
             isFire.shift()
         }
+        isBomb[bombIndex[0][0]][bombIndex[0][1]] = false
+        bombIndex.shift()
+    }
+}
+
+class Enemy {
+    constructor (color, y, x) {
+        this.color = color
+        this.yPos = y
+        this.xPos = x
+        this.direction = 0
+        this.up = true
+        this.down = true
+        this.left = true
+        this.right = true
+        this.canMove = false
+        this.canBomb = false
+        this.bombCount = 2
+        this.enemy = boxes[this.yPos][this.xPos]
+        this.sprite = document.createElement('img')
+        this.sprite.src = `sprites/${this.color}-sprite/${this.color}_down/${this.color}-standing-down.png`
+        isSprite[this.yPos][this.xPos] = true
+    }
+
+    appendSprite () {
+        this.enemy.appendChild(this.sprite)
+    }
+
+    randNumber () {
+        this.canMove = false
+        this.up = true
+        this.down = true
+        this.left = true
+        this.right = true
+        this.direction = Math.ceil(Math.random() * 4)
+        while(!this.canMove) {
+            if (this.direction == 1) {
+                if (stone[this.yPos-1][this.xPos] || brick[this.yPos-1][this.xPos] || isBomb[this.yPos-1][this.xPos] || isSprite[this.yPos-1][this.xPos]) {
+                    this.direction = Math.ceil(Math.random() * 4)
+                    this.up = false
+                } else {
+                    this.canMove = true
+                }
+            } else if (this.direction == 2) {
+                if (stone[this.yPos+1][this.xPos] || brick[this.yPos+1][this.xPos] || isBomb[this.yPos+1][this.xPos] || isSprite[this.yPos+1][this.xPos]) {
+                    this.direction = Math.ceil(Math.random() * 4)
+                    this.down = false
+                } else {
+                    this.canMove = true
+                }
+            } else if (this.direction == 3) {
+                if (stone[this.yPos][this.xPos-1] || brick[this.yPos][this.xPos-1] || isBomb[this.yPos][this.xPos-1] || isSprite[this.yPos][this.xPos-1]) {
+                    this.direction = Math.ceil(Math.random() * 4)
+                    this.left = false
+                } else {
+                    this.canMove = true
+                }
+            } else {
+                if (stone[this.yPos][this.xPos+1] || brick[this.yPos][this.xPos+1] || isBomb[this.yPos][this.xPos+1] || isSprite[this.yPos][this.xPos+1]) {
+                    this.direction = Math.ceil(Math.random() * 4)
+                    this.right = false
+                } else {
+                    this.canMove = true
+                }
+            }
+            if (!this.right && !this.left && !this.down && !this.up) {
+                this.canMove = true
+            }
+        }
+        if (!this.right && !this.left && !this.down && !this.up) {
+            this.isTrapped()
+        } else {
+            this.right = true
+            this.left = true
+            this.down = true
+            this.up = true
+            this.moveSprite()
+        }
+    }
+
+    isTrapped () {
+        if (isSprite[this.yPos][this.xPos+1] || isSprite[this.yPos][this.xPos-1] || isSprite[this.yPos+1][this.xPos] || isSprite[this.yPos-1][this.xPos]) {
+            setTimeout(() => {enemyOne.isTrapped()}, 500)
+        } else {
+            setTimeout(() => {enemyOne.randNumber()}, 200)
+        }
+    }
+
+    moveSprite () {
+        isSprite[this.yPos][this.xPos] = false
+        if (this.direction == 1) {
+            this.yPos--
+            // this.placeBombDown()
+        } else if (this.direction == 2) {
+            this.yPos++
+        } else if (this.direction == 3) {
+            this.xPos--
+        } else {
+            this.xPos++
+        }
+        isSprite[this.yPos][this.xPos] = true
+        this.enemy.removeChild(this.sprite)
+        this.enemy = boxes[this.yPos][this.xPos]
+        this.enemy.appendChild(this.sprite)
+        if (!playerDead) {
+            setTimeout(function () {enemyOne.randNumber()}, 500)
+        }
+    }
+
+    placeBombDown () {
+        this.canBomb = false
+        if (this.bombCount > 0 && !isBomb[this.yPos][this.xPos]) {
+            this.canBomb = true
+        }
+        if (this.canBomb) {
+            this.bombCount--
+            bombIndex.push([this.yPos, this.xPos])
+            isBomb[this.yPos][this.xPos] = true
+            let newBomb = new Bomb(this.xPos, this.yPos)
+            newBomb.placeBomb()
+            setTimeout(() => {newBomb.bombRed()}, 500)
+            setTimeout(() => {newBomb.bombBlack()}, 1000)
+            setTimeout(() => {newBomb.bombRed()}, 1500)
+            setTimeout(() => {newBomb.bombBlack()}, 2000)
+            setTimeout(() => {newBomb.bombExplode()}, 2500)
+            setTimeout(() => {newBomb.addFire()}, 2500)
+            setTimeout(() => {newBomb.removeFire()}, 2850)
+            setTimeout(() => {enemyOne.canBombAgain()}, 2850)
+        }
+    }
+
+    canBombAgain () {
+        this.bombCount++
     }
 }
 
@@ -108,6 +242,8 @@ function createBoard () {
         let stoneRow = []
         let boxesRow = []
         let bricksRow = []
+        let bombRow = []
+        let spriteRow = []
         for (let col = 0; col < 15; col++) {
             willBrick = Math.ceil(Math.random() * 10)
             let newBox = document.createElement('div')
@@ -170,14 +306,23 @@ function createBoard () {
             }
             gameBoard.appendChild(newBox)
             boxesRow.push(newBox)
+            bombRow.push(false)
+            spriteRow.push(false)
         }
         boxes.push(boxesRow)
         stone.push(stoneRow)
         brick.push(bricksRow)
+        isBomb.push(bombRow)
+        isSprite.push(spriteRow)
     }
     player = boxes[yPos][xPos]
     player.appendChild(playerSprite)
+    isSprite[yPos][xPos] = true
 }
+
+let enemyOne = new Enemy('white', 13, 13)
+enemyOne.appendSprite()
+enemyOne.randNumber()
 
 function checkForFire () {
     for (let check = 0; check < isFire.length; check++) {
@@ -211,9 +356,10 @@ function killPlayer () {
 
 function movePlayer () {
     if (!playerDead) {
+        isSprite[yPos][xPos] = false
         if (direction == 'w') {
             direction = 'up'
-            if (!stone[yPos-1][xPos] && !brick[yPos-1][xPos]) {
+            if (!stone[yPos-1][xPos] && !brick[yPos-1][xPos] && !isBomb[yPos-1][xPos] && !isSprite[yPos-1][xPos]) {
                 yPos--
                 setAnimatePlayer()
             } else {
@@ -221,7 +367,7 @@ function movePlayer () {
             }
         } else if (direction == 's') {
             direction = 'down'
-            if (!stone[yPos+1][xPos] && !brick[yPos+1][xPos]) {
+            if (!stone[yPos+1][xPos] && !brick[yPos+1][xPos] && !isBomb[yPos+1][xPos] && !isSprite[yPos+1][xPos]) {
                 yPos++
                 setAnimatePlayer()
             } else {
@@ -229,7 +375,7 @@ function movePlayer () {
             }
         } else if(direction == 'a') {
             direction = 'left'
-            if (!stone[yPos][xPos-1] && !brick[yPos][xPos-1]) {
+            if (!stone[yPos][xPos-1] && !brick[yPos][xPos-1] && !isBomb[yPos][xPos-1] && !isSprite[yPos][xPos-1]) {
                 xPos--
                 setAnimatePlayer()
             } else {
@@ -237,13 +383,14 @@ function movePlayer () {
             }
         } else if (direction == 'd') {
             direction = 'right'
-            if (!stone[yPos][xPos+1] && !brick[yPos][xPos+1]) {
+            if (!stone[yPos][xPos+1] && !brick[yPos][xPos+1] && !isBomb[yPos][xPos+1] && !isSprite[yPos][xPos+1]) {
                 xPos++
                 setAnimatePlayer()
             } else {
                 playerSprite.src = `sprites/white-sprite/white_${direction}/white-standing-${direction}.png`
             }
         }
+        isSprite[yPos][xPos] = true
         player.removeChild(playerSprite)
         player = boxes[yPos][xPos]
         player.appendChild(playerSprite)
@@ -259,6 +406,10 @@ function setAnimatePlayer () {
     playerSprite.src = `sprites/white-sprite/white_${direction}/white-walking-${direction}${animation}.png`
 }
 
+function allowBomb () {
+    playerBombs++
+}
+
 document.addEventListener('keypress', evt => {
     if (evt.key == 'w' || evt.key == 's' || evt.key == 'd' || evt.key == 'a') {
         direction = evt.key
@@ -266,27 +417,26 @@ document.addEventListener('keypress', evt => {
     }
     if (evt.code == 'Space') {
         let canBomb = false
-        for (let c = 0; c < playerBombs.length; c++) {
-            if (playerBombs[c]) {
-                canBomb = true
-                playerBombs.shift()
-                playerBombs.push(false)
-                c = playerBombs.length
-            }
+        if (playerBombs > 0 && !isBomb[yPos][xPos]) {
+            canBomb = true
         }
         if (canBomb == true) {
+            playerBombs--
+            bombIndex.push([yPos, xPos])
+            isBomb[yPos][xPos] = true
             player.removeChild(playerSprite)
             playerSprite.src = `sprites/white-sprite/white_${direction}/white-standing-${direction}.png`
             player.appendChild(playerSprite)
             let newBomb = new Bomb(xPos, yPos)
             newBomb.placeBomb()
-            setTimeout(function () {newBomb.bombRed()}, 500)
-            setTimeout(function () {newBomb.bombBlack()}, 1000)
-            setTimeout(function () {newBomb.bombRed()}, 1500)
-            setTimeout(function () {newBomb.bombBlack()}, 2000)
-            setTimeout(function () {newBomb.bombExplode()}, 2500)
-            setTimeout(function () {newBomb.addFire()}, 2500)
-            setTimeout(function () {newBomb.removeFire()}, 2850)
+            setTimeout(() => {newBomb.bombRed()}, 500)
+            setTimeout(() => {newBomb.bombBlack()}, 1000)
+            setTimeout(() => {newBomb.bombRed()}, 1500)
+            setTimeout(() => {newBomb.bombBlack()}, 2000)
+            setTimeout(() => {newBomb.bombExplode()}, 2500)
+            setTimeout(() => {newBomb.addFire()}, 2500)
+            setTimeout(() => {newBomb.removeFire()}, 2850)
+            setTimeout(allowBomb, 2850)
         }
     }
 })
