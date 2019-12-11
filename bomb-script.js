@@ -30,45 +30,44 @@ class Bomb {
         this.fireIndex = 0
     }
 
-    simulateExplosion () {
-        dangerIndex.push([this.bombY, this.bombX])
-        isDanger[this.bombY][this.bombX] = true
-        if (!stone[this.bombY-1][this.bombX]) {
-            dangerIndex.push([this.bombY-1, this.bombX])
-            isDanger[this.bombY-1][this.bombX] = true
-            if (!stone[this.bombY-2][this.bombX] && !brick[this.bombY-1][this.bombX]) {
-                dangerIndex.push([this.bombY-2, this.bombX])
-                isDanger[this.bombY-2][this.bombX] = true
-            }
-        } if (!stone[this.bombY+1][this.bombX]) {
-            dangerIndex.push([this.bombY+1, this.bombX])
-            isDanger[this.bombY+1][this.bombX] = true
-            if (!stone[this.bombY+2][this.bombX] && !brick[this.bombY+1][this.bombX]) {
-                dangerIndex.push([this.bombY+2, this.bombX])
-                isDanger[this.bombY+2][this.bombX] = true
-            }
-        } if (!stone[this.bombY][this.bombX+1]) {
-            dangerIndex.push([this.bombY, this.bombX+1])
-            isDanger[this.bombY][this.bombX+1] = true
-            if (!stone[this.bombY][this.bombX+2] && !brick[this.bombY][this.bombX+1]) {
-                dangerIndex.push([this.bombY, this.bombX+2])
-                isDanger[this.bombY][this.bombX+2] = true
-            }
-        } if (!stone[this.bombY][this.bombX-1]) {
-            dangerIndex.push([this.bombY, this.bombX-1])
-            isDanger[this.bombY][this.bombX-1] = true
-            if (!stone[this.bombY][this.bombX-2] && !brick[this.bombY][this.bombX-1]) {
-                dangerIndex.push([this.bombY, this.bombX-2])
-                isDanger[this.bombY][this.bombX-2] = true
-            }
-        }
-        dangerContainer.push(dangerIndex)
-        dangerIndex = []
-    }
+    // simulateExplosion () {
+    //     dangerIndex.push([this.bombY, this.bombX])
+    //     isDanger[this.bombY][this.bombX] = true
+    //     if (!stone[this.bombY-1][this.bombX]) {
+    //         dangerIndex.push([this.bombY-1, this.bombX])
+    //         isDanger[this.bombY-1][this.bombX] = true
+    //         if (!stone[this.bombY-2][this.bombX] && !brick[this.bombY-1][this.bombX]) {
+    //             dangerIndex.push([this.bombY-2, this.bombX])
+    //             isDanger[this.bombY-2][this.bombX] = true
+    //         }
+    //     } if (!stone[this.bombY+1][this.bombX]) {
+    //         dangerIndex.push([this.bombY+1, this.bombX])
+    //         isDanger[this.bombY+1][this.bombX] = true
+    //         if (!stone[this.bombY+2][this.bombX] && !brick[this.bombY+1][this.bombX]) {
+    //             dangerIndex.push([this.bombY+2, this.bombX])
+    //             isDanger[this.bombY+2][this.bombX] = true
+    //         }
+    //     } if (!stone[this.bombY][this.bombX+1]) {
+    //         dangerIndex.push([this.bombY, this.bombX+1])
+    //         isDanger[this.bombY][this.bombX+1] = true
+    //         if (!stone[this.bombY][this.bombX+2] && !brick[this.bombY][this.bombX+1]) {
+    //             dangerIndex.push([this.bombY, this.bombX+2])
+    //             isDanger[this.bombY][this.bombX+2] = true
+    //         }
+    //     } if (!stone[this.bombY][this.bombX-1]) {
+    //         dangerIndex.push([this.bombY, this.bombX-1])
+    //         isDanger[this.bombY][this.bombX-1] = true
+    //         if (!stone[this.bombY][this.bombX-2] && !brick[this.bombY][this.bombX-1]) {
+    //             dangerIndex.push([this.bombY, this.bombX-2])
+    //             isDanger[this.bombY][this.bombX-2] = true
+    //         }
+    //     }
+    //     dangerContainer.push(dangerIndex)
+    //     dangerIndex = []
+    // }
 
     placeBomb () {
         boxes[this.bombY][this.bombX].classList.add('bomb-black')
-        this.simulateExplosion()
     }
 
     bombRed () {
@@ -140,12 +139,8 @@ class Bomb {
         for (let q = 0; q < this.fireIndex; q++) {
             isFire.shift()
         }
-        for (let s = 0; s< dangerContainer[0].length; s++) {
-            isDanger[dangerContainer[0][s][0]][dangerContainer[0][s][1]] = false
-        }
         isBomb[bombIndex[0][0]][bombIndex[0][1]] = false
         bombIndex.shift()
-        dangerContainer.shift()
     }
 }
 
@@ -172,124 +167,1414 @@ class Enemy {
         this.enemy.appendChild(this.sprite)
     }
 
-    randNumber () {
-        this.canMove = false
-        this.up = true
-        this.down = true
-        this.left = true
-        this.right = true
-        this.direction = Math.ceil(Math.random() * 4)
-        if (!isDanger[this.yPos][this.xPos]) {
-            while(!this.canMove) {
-                if (this.direction == 1) {
-                    if (stone[this.yPos-1][this.xPos] || brick[this.yPos-1][this.xPos] || isBomb[this.yPos-1][this.xPos] || isSprite[this.yPos-1][this.xPos] || isDanger[this.yPos-1][this.xPos]) {
-                        this.direction = Math.ceil(Math.random() * 4)
-                        this.up = false
-                    } else {
-                        this.canMove = true
-                    }
-                } else if (this.direction == 2) {
-                    if (stone[this.yPos+1][this.xPos] || brick[this.yPos+1][this.xPos] || isBomb[this.yPos+1][this.xPos] || isSprite[this.yPos+1][this.xPos] || isDanger[this.yPos+1][this.xPos]) {
-                        this.direction = Math.ceil(Math.random() * 4)
-                        this.down = false
-                    } else {
-                        this.canMove = true
-                    }
-                } else if (this.direction == 3) {
-                    if (stone[this.yPos][this.xPos-1] || brick[this.yPos][this.xPos-1] || isBomb[this.yPos][this.xPos-1] || isSprite[this.yPos][this.xPos-1] || isDanger[this.yPos][this.xPos-1]) {
-                        this.direction = Math.ceil(Math.random() * 4)
-                        this.left = false
-                    } else {
-                        this.canMove = true
-                    }
-                } else {
-                    if (stone[this.yPos][this.xPos+1] || brick[this.yPos][this.xPos+1] || isBomb[this.yPos][this.xPos+1] || isSprite[this.yPos][this.xPos+1] || isDanger[this.yPos][this.xPos+1]) {
-                        this.direction = Math.ceil(Math.random() * 4)
-                        this.right = false
-                    } else {
-                        this.canMove = true
-                    }
-                }
-                if (!this.right && !this.left && !this.down && !this.up) {
-                    this.canMove = true
-                }
+    // randNumber () {
+    //     this.canMove = false
+    //     this.up = true
+    //     this.down = true
+    //     this.left = true
+    //     this.right = true
+    //     this.direction = Math.ceil(Math.random() * 4)
+    //     if (!isDanger[this.yPos][this.xPos]) {
+    //         while(!this.canMove) {
+    //             if (this.direction == 1) {
+    //                 if (stone[this.yPos-1][this.xPos] || brick[this.yPos-1][this.xPos] || isBomb[this.yPos-1][this.xPos] || isSprite[this.yPos-1][this.xPos] || isDanger[this.yPos-1][this.xPos]) {
+    //                     this.direction = Math.ceil(Math.random() * 4)
+    //                     this.up = false
+    //                 } else {
+    //                     this.canMove = true
+    //                 }
+    //             } else if (this.direction == 2) {
+    //                 if (stone[this.yPos+1][this.xPos] || brick[this.yPos+1][this.xPos] || isBomb[this.yPos+1][this.xPos] || isSprite[this.yPos+1][this.xPos] || isDanger[this.yPos+1][this.xPos]) {
+    //                     this.direction = Math.ceil(Math.random() * 4)
+    //                     this.down = false
+    //                 } else {
+    //                     this.canMove = true
+    //                 }
+    //             } else if (this.direction == 3) {
+    //                 if (stone[this.yPos][this.xPos-1] || brick[this.yPos][this.xPos-1] || isBomb[this.yPos][this.xPos-1] || isSprite[this.yPos][this.xPos-1] || isDanger[this.yPos][this.xPos-1]) {
+    //                     this.direction = Math.ceil(Math.random() * 4)
+    //                     this.left = false
+    //                 } else {
+    //                     this.canMove = true
+    //                 }
+    //             } else {
+    //                 if (stone[this.yPos][this.xPos+1] || brick[this.yPos][this.xPos+1] || isBomb[this.yPos][this.xPos+1] || isSprite[this.yPos][this.xPos+1] || isDanger[this.yPos][this.xPos+1]) {
+    //                     this.direction = Math.ceil(Math.random() * 4)
+    //                     this.right = false
+    //                 } else {
+    //                     this.canMove = true
+    //                 }
+    //             }
+    //             if (!this.right && !this.left && !this.down && !this.up) {
+    //                 this.canMove = true
+    //             }
+    //         }
+    //     } else {
+    //         while(!this.canMove) {
+    //             if (this.direction == 1) {
+    //                 if (stone[this.yPos-1][this.xPos] || brick[this.yPos-1][this.xPos] || isBomb[this.yPos-1][this.xPos] || isSprite[this.yPos-1][this.xPos]) {
+    //                     this.direction = Math.ceil(Math.random() * 4)
+    //                     this.up = false
+    //                 } else {
+    //                     this.canMove = true
+    //                 }
+    //             } else if (this.direction == 2) {
+    //                 if (stone[this.yPos+1][this.xPos] || brick[this.yPos+1][this.xPos] || isBomb[this.yPos+1][this.xPos] || isSprite[this.yPos+1][this.xPos]) {
+    //                     this.direction = Math.ceil(Math.random() * 4)
+    //                     this.down = false
+    //                 } else {
+    //                     this.canMove = true
+    //                 }
+    //             } else if (this.direction == 3) {
+    //                 if (stone[this.yPos][this.xPos-1] || brick[this.yPos][this.xPos-1] || isBomb[this.yPos][this.xPos-1] || isSprite[this.yPos][this.xPos-1]) {
+    //                     this.direction = Math.ceil(Math.random() * 4)
+    //                     this.left = false
+    //                 } else {
+    //                     this.canMove = true
+    //                 }
+    //             } else {
+    //                 if (stone[this.yPos][this.xPos+1] || brick[this.yPos][this.xPos+1] || isBomb[this.yPos][this.xPos+1] || isSprite[this.yPos][this.xPos+1]) {
+    //                     this.direction = Math.ceil(Math.random() * 4)
+    //                     this.right = false
+    //                 } else {
+    //                     this.canMove = true
+    //                 }
+    //             }
+    //             if (!this.right && !this.left && !this.down && !this.up) {
+    //                 this.canMove = true
+    //             }
+    //         }
+    //     }
+    //     if (!this.right && !this.left && !this.down && !this.up) {
+    //         this.isTrapped()
+    //     } else {
+    //         this.right = true
+    //         this.left = true
+    //         this.down = true
+    //         this.up = true
+    //         this.moveSprite()
+    //     }
+    // }
+
+    // isTrapped () {
+    //     if (isSprite[this.yPos][this.xPos+1] || isSprite[this.yPos][this.xPos-1] || isSprite[this.yPos+1][this.xPos] || isSprite[this.yPos-1][this.xPos]) {
+    //         setTimeout(() => {this.isTrapped()}, 500)
+    //     } else {
+    //         setTimeout(() => {this.randNumber()}, 200)
+    //     }
+    // }
+
+    // moveSprite () {
+    //     isSprite[this.yPos][this.xPos] = false
+    //     if (this.direction == 1) {
+    //         this.yPos--
+    //         // this.placeBombDown()
+    //     } else if (this.direction == 2) {
+    //         this.yPos++
+    //     } else if (this.direction == 3) {
+    //         this.xPos--
+    //     } else {
+    //         this.xPos++
+    //     }
+    //     isSprite[this.yPos][this.xPos] = true
+    //     this.enemy.removeChild(this.sprite)
+    //     this.enemy = boxes[this.yPos][this.xPos]
+    //     this.enemy.appendChild(this.sprite)
+    //     this.testBomb()
+    // }
+
+    testBomb () {
+        let willBomb = Math.ceil(Math.random() * 4)
+        if (willBomb < 10) {
+            this.simulateExplosion()
+        }
+        // } else {
+        //     if (!playerDead) {
+        //         setTimeout(() => {this.randNumber()}, 500)
+        //     }
+        // }
+    }
+
+    simulateExplosion () {
+        dangerIndex.push([this.yPos, this.xPos])
+        isDanger[this.yPos][this.xPos] = true
+        if (!stone[this.yPos-1][this.xPos]) {
+            dangerIndex.push([this.yPos-1, this.xPos])
+            isDanger[this.yPos-1][this.xPos] = true
+            if (!stone[this.yPos-2][this.xPos] && !brick[this.yPos-1][this.xPos]) {
+                dangerIndex.push([this.yPos-2, this.xPos])
+                isDanger[this.yPos-2][this.xPos] = true
             }
-        } else {
-            while(!this.canMove) {
-                if (this.direction == 1) {
-                    if (stone[this.yPos-1][this.xPos] || brick[this.yPos-1][this.xPos] || isBomb[this.yPos-1][this.xPos] || isSprite[this.yPos-1][this.xPos]) {
-                        this.direction = Math.ceil(Math.random() * 4)
-                        this.up = false
-                    } else {
-                        this.canMove = true
-                    }
-                } else if (this.direction == 2) {
-                    if (stone[this.yPos+1][this.xPos] || brick[this.yPos+1][this.xPos] || isBomb[this.yPos+1][this.xPos] || isSprite[this.yPos+1][this.xPos]) {
-                        this.direction = Math.ceil(Math.random() * 4)
-                        this.down = false
-                    } else {
-                        this.canMove = true
-                    }
-                } else if (this.direction == 3) {
-                    if (stone[this.yPos][this.xPos-1] || brick[this.yPos][this.xPos-1] || isBomb[this.yPos][this.xPos-1] || isSprite[this.yPos][this.xPos-1]) {
-                        this.direction = Math.ceil(Math.random() * 4)
-                        this.left = false
-                    } else {
-                        this.canMove = true
-                    }
-                } else {
-                    if (stone[this.yPos][this.xPos+1] || brick[this.yPos][this.xPos+1] || isBomb[this.yPos][this.xPos+1] || isSprite[this.yPos][this.xPos+1]) {
-                        this.direction = Math.ceil(Math.random() * 4)
-                        this.right = false
-                    } else {
-                        this.canMove = true
-                    }
-                }
-                if (!this.right && !this.left && !this.down && !this.up) {
-                    this.canMove = true
-                }
+        } if (!stone[this.yPos+1][this.xPos]) {
+            dangerIndex.push([this.yPos+1, this.xPos])
+            isDanger[this.yPos+1][this.xPos] = true
+            if (!stone[this.yPos+2][this.xPos] && !brick[this.yPos+1][this.xPos]) {
+                dangerIndex.push([this.yPos+2, this.xPos])
+                isDanger[this.yPos+2][this.xPos] = true
+            }
+        } if (!stone[this.yPos][this.xPos+1]) {
+            dangerIndex.push([this.yPos, this.xPos+1])
+            isDanger[this.yPos][this.xPos+1] = true
+            if (!stone[this.yPos][this.xPos+2] && !brick[this.yPos][this.xPos+1]) {
+                dangerIndex.push([this.yPos, this.xPos+2])
+                isDanger[this.yPos][this.xPos+2] = true
+            }
+        } if (!stone[this.yPos][this.xPos-1]) {
+            dangerIndex.push([this.yPos, this.xPos-1])
+            isDanger[this.yPos][this.xPos-1] = true
+            if (!stone[this.yPos][this.xPos-2] && !brick[this.yPos][this.xPos-1]) {
+                dangerIndex.push([this.yPos, this.xPos-2])
+                isDanger[this.yPos][this.xPos-2] = true
             }
         }
-        if (!this.right && !this.left && !this.down && !this.up) {
-            this.isTrapped()
+        dangerContainer.push(dangerIndex)
+        dangerIndex = []
+        this.simulateRoute()
+    }
+
+    simulateRoute () {
+        let safeRoute = false
+        let simCount = 0
+        let y1
+        let x1
+        let y2
+        let x2
+        let y3 = false
+        let x3 = false
+
+        for (let routeOne = 1; routeOne <= 4; routeOne++) {
+            if (routeOne == 1) {
+                if (stone[this.yPos-1][this.xPos] || brick[this.yPos-1][this.xPos] || isBomb[this.yPos-1][this.xPos] || isSprite[this.yPos-1][this.xPos]) {
+                    simCount++
+                    console.log(simCount)
+                } else {
+                    console.log('work')
+                    y1 = this.yPos-1
+                    x1 = this.xPos
+                    for (let routeTwo = 1; routeTwo <= 4; routeTwo++) {
+                        if (routeTwo == 1) {
+                            if (stone[y1-1][x1] || brick[y1-1][x1] || isBomb[y1-1][x1] || isSprite[y1-1][x1]) {
+                                simCount++
+                                console.log(simCount)
+                            } else {
+                                console.log('work')
+                                y2 = y1-1
+                                x2 = x1
+                                if (!isDanger[y2][x2]) {
+                                    safeRoute = true
+                                } else {
+                                    for (let routeThree = 1; routeThree <= 4; routeThree++) {
+                                        if (routeThree == 1) {
+                                            if (stone[y2-1][x2] || brick[y2-1][x2] || isBomb[y2-1][x2] || isSprite[y2-1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2-1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 2) {
+                                            if (stone[y2+1][x2] || brick[y2+1][x2] || isBomb[y2+1][x2] || isSprite[y2+1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2+1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 3) {
+                                            if (stone[y2][x2-1] || brick[y2][x2-1] || isBomb[y2][x2-1] || isSprite[y2][x2-1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2-1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else {
+                                            if (stone[y2][x2+1] || brick[y2][x2+1] || isBomb[y2][x2+1] || isSprite[y2][x2+1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2+1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        }
+                                        if (safeRoute) {
+                                        routeThree = 5
+                                        } else {
+                                            y3 = false
+                                        }
+                                    }
+                                }
+                            }
+                        } else if (routeTwo == 2) {
+                            if (stone[y1+1][x1] || brick[y1+1][x1] || isBomb[y1+1][x1] || isSprite[y1+1][x1]) {
+                                simCount++
+                                console.log(simCount)
+                            } else {
+                                console.log('work')
+                                y2 = y1+1
+                                x2 = x1
+                                if (!isDanger[y2][x2]) {
+                                    safeRoute = true
+                                } else {
+                                    for (let routeThree = 1; routeThree <= 4; routeThree++) {
+                                        if (routeThree == 1) {
+                                            if (stone[y2-1][x2] || brick[y2-1][x2] || isBomb[y2-1][x2] || isSprite[y2-1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2-1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 2) {
+                                            if (stone[y2+1][x2] || brick[y2+1][x2] || isBomb[y2+1][x2] || isSprite[y2+1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2+1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 3) {
+                                            if (stone[y2][x2-1] || brick[y2][x2-1] || isBomb[y2][x2-1] || isSprite[y2][x2-1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2-1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else {
+                                            if (stone[y2][x2+1] || brick[y2][x2+1] || isBomb[y2][x2+1] || isSprite[y2][x2+1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2+1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        }
+                                        if (safeRoute) {
+                                        routeThree = 5
+                                        } else {
+                                            y3 = false
+                                        }
+                                    }
+                                }
+                            }
+                        } else if (routeTwo == 3) {
+                            if (stone[y1][x1-1] || brick[y1][x1-1] || isBomb[y1][x1-1] || isSprite[y1][x1-1]) {
+                                simCount++
+                                console.log(simCount)
+                            } else {
+                                console.log('work')
+                                y2 = y1
+                                x2 = x1-1
+                                if (!isDanger[y2][x2]) {
+                                    safeRoute = true
+                                } else {
+                                    for (let routeThree = 1; routeThree <= 4; routeThree++) {
+                                        if (routeThree == 1) {
+                                            if (stone[y2-1][x2] || brick[y2-1][x2] || isBomb[y2-1][x2] || isSprite[y2-1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2-1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 2) {
+                                            if (stone[y2+1][x2] || brick[y2+1][x2] || isBomb[y2+1][x2] || isSprite[y2+1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2+1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 3) {
+                                            if (stone[y2][x2-1] || brick[y2][x2-1] || isBomb[y2][x2-1] || isSprite[y2][x2-1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else { 
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2-1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else {
+                                            if (stone[y2][x2+1] || brick[y2][x2+1] || isBomb[y2][x2+1] || isSprite[y2][x2+1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2+1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        }
+                                        if (safeRoute) {
+                                        routeThree = 5
+                                        } else {
+                                            y3 = false
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            if (stone[y1][x1+1] || brick[y1][x1+1] || isBomb[y1][x1+1] || isSprite[y1][x1+1]) {
+                                simCount++
+                                console.log(simCount)
+                            } else {
+                                console.log('work')
+                                y2 = y1
+                                x2 = x1+1
+                                if (!isDanger[y2][x2]) {
+                                    safeRoute = true
+                                } else {
+                                    for (let routeThree = 1; routeThree <= 4; routeThree++) {
+                                        if (routeThree == 1) {
+                                            if (stone[y2-1][x2] || brick[y2-1][x2] || isBomb[y2-1][x2] || isSprite[y2-1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2-1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 2) {
+                                            if (stone[y2+1][x2] || brick[y2+1][x2] || isBomb[y2+1][x2] || isSprite[y2+1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2+1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 3) {
+                                            if (stone[y2][x2-1] || brick[y2][x2-1] || isBomb[y2][x2-1] || isSprite[y2][x2-1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2-1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else {
+                                            if (stone[y2][x2+1] || brick[y2][x2+1] || isBomb[y2][x2+1] || isSprite[y2][x2+1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2+1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        }
+                                        if (safeRoute) {
+                                        routeThree = 5
+                                        } else {
+                                            y3 = false
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (safeRoute) {
+                            routeTwo = 5
+                        }
+                    }
+                }
+            } else if (routeOne == 2) {
+                if (stone[this.yPos+1][this.xPos] || brick[this.yPos+1][this.xPos] || isBomb[this.yPos+1][this.xPos] || isSprite[this.yPos+1][this.xPos]) {
+                    simCount++
+                    console.log(simCount)
+                } else {
+                    console.log('work')
+                    y1 = this.yPos+1
+                    x1 = this.xPos
+                    for (let routeTwo = 1; routeTwo <= 4; routeTwo++) {
+                        if (routeTwo == 1) {
+                            if (stone[y1-1][x1] || brick[y1-1][x1] || isBomb[y1-1][x1] || isSprite[y1-1][x1]) {
+                                simCount++
+                                console.log(simCount)
+                            } else {
+                                console.log('work')
+                                y2 = y1-1
+                                x2 = x1
+                                if (!isDanger[y2][x2]) {
+                                    safeRoute = true
+                                } else {
+                                    for (let routeThree = 1; routeThree <= 4; routeThree++) {
+                                        if (routeThree == 1) {
+                                            if (stone[y2-1][x2] || brick[y2-1][x2] || isBomb[y2-1][x2] || isSprite[y2-1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2-1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 2) {
+                                            if (stone[y2+1][x2] || brick[y2+1][x2] || isBomb[y2+1][x2] || isSprite[y2+1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2+1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 3) {
+                                            if (stone[y2][x2-1] || brick[y2][x2-1] || isBomb[y2][x2-1] || isSprite[y2][x2-1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2-1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else {
+                                            if (stone[y2][x2+1] || brick[y2][x2+1] || isBomb[y2][x2+1] || isSprite[y2][x2+1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2+1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        }
+                                        if (safeRoute) {
+                                        routeThree = 5
+                                        } else {
+                                            y3 = false
+                                        }
+                                    }
+                                }
+                            }
+                        } else if (routeTwo == 2) {
+                            if (stone[y1+1][x1] || brick[y1+1][x1] || isBomb[y1+1][x1] || isSprite[y1+1][x1]) {
+                                simCount++
+                                console.log(simCount)
+                            } else {
+                                console.log('work')
+                                y2 = y1+1
+                                x2 = x1
+                                if (!isDanger[y2][x2]) {
+                                    safeRoute = true
+                                } else {
+                                    for (let routeThree = 1; routeThree <= 4; routeThree++) {
+                                        if (routeThree == 1) {
+                                            if (stone[y2-1][x2] || brick[y2-1][x2] || isBomb[y2-1][x2] || isSprite[y2-1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2-1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 2) {
+                                            if (stone[y2+1][x2] || brick[y2+1][x2] || isBomb[y2+1][x2] || isSprite[y2+1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2+1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 3) {
+                                            if (stone[y2][x2-1] || brick[y2][x2-1] || isBomb[y2][x2-1] || isSprite[y2][x2-1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2-1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else {
+                                            if (stone[y2][x2+1] || brick[y2][x2+1] || isBomb[y2][x2+1] || isSprite[y2][x2+1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2+1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        }
+                                        if (safeRoute) {
+                                        routeThree = 5
+                                        } else {
+                                            y3 = false
+                                        }
+                                    }
+                                }
+                            }
+                        } else if (routeTwo == 3) {
+                            if (stone[y1][x1-1] || brick[y1][x1-1] || isBomb[y1][x1-1] || isSprite[y1][x1-1]) {
+                                simCount++
+                                console.log(simCount)
+                            } else {
+                                console.log('safe')
+                                y2 = y1
+                                x2 = x1-1
+                                console.log(y2, x2)
+                                console.log(y1, this.yPos)
+                                console.log(isDanger[12][13])
+                                if (!isDanger[y2][x2]) {
+                                    console.log('safe')
+                                    safeRoute = true
+                                } else {
+                                    for (let routeThree = 1; routeThree <= 4; routeThree++) {
+                                        if (routeThree == 1) {
+                                            if (stone[y2-1][x2] || brick[y2-1][x2] || isBomb[y2-1][x2] || isSprite[y2-1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('fail')
+                                                y3 = y2-1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 2) {
+                                            if (stone[y2+1][x2] || brick[y2+1][x2] || isBomb[y2+1][x2] || isSprite[y2+1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2+1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 3) {
+                                            if (stone[y2][x2-1] || brick[y2][x2-1] || isBomb[y2][x2-1] || isSprite[y2][x2-1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2-1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else {
+                                            if (stone[y2][x2+1] || brick[y2][x2+1] || isBomb[y2][x2+1] || isSprite[y2][x2+1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2+1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        }
+                                        if (safeRoute) {
+                                        routeThree = 5
+                                        } else {
+                                            y3 = false
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            if (stone[y1][x1+1] || brick[y1][x1+1] || isBomb[y1][x1+1] || isSprite[y1][x1+1]) {
+                                simCount++
+                                console.log(simCount)
+                            } else {
+                                console.log('work')
+                                y2 = y1
+                                x2 = x1+1
+                                if (!isDanger[y2][x2]) {
+                                    safeRoute = true
+                                } else {
+                                    for (let routeThree = 1; routeThree <= 4; routeThree++) {
+                                        if (routeThree == 1) {
+                                            if (stone[y2-1][x2] || brick[y2-1][x2] || isBomb[y2-1][x2] || isSprite[y2-1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2-1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 2) {
+                                            if (stone[y2+1][x2] || brick[y2+1][x2] || isBomb[y2+1][x2] || isSprite[y2+1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2+1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 3) {
+                                            if (stone[y2][x2-1] || brick[y2][x2-1] || isBomb[y2][x2-1] || isSprite[y2][x2-1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2-1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else {
+                                            if (stone[y2][x2+1] || brick[y2][x2+1] || isBomb[y2][x2+1] || isSprite[y2][x2+1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2+1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        }
+                                        if (safeRoute) {
+                                        routeThree = 5
+                                        } else {
+                                            y3 = false
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (safeRoute) {
+                            routeTwo = 5
+                        }
+                    }
+                }
+            } else if (routeOne == 3) {
+                if (stone[this.yPos][this.xPos-1] || brick[this.yPos][this.xPos-1] || isBomb[this.yPos][this.xPos-1] || isSprite[this.yPos][this.xPos-1]) {
+                    simCount++
+                    console.log(simCount)
+                } else {
+                    console.log('work')
+                    y1 = this.yPos
+                    x1 = this.xPos-1
+                    for (let routeTwo = 1; routeTwo <= 4; routeTwo++) {
+                        if (routeTwo == 1) {
+                            if (stone[y1-1][x1] || brick[y1-1][x1] || isBomb[y1-1][x1] || isSprite[y1-1][x1]) {
+                                simCount++
+                                console.log(simCount)
+                            } else {
+                                console.log('work')
+                                y2 = y1-1
+                                x2 = x1
+                                if (!isDanger[y2][x2]) {
+                                    safeRoute = true
+                                } else {
+                                    for (let routeThree = 1; routeThree <= 4; routeThree++) {
+                                        if (routeThree == 1) {
+                                            if (stone[y2-1][x2] || brick[y2-1][x2] || isBomb[y2-1][x2] || isSprite[y2-1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2-1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 2) {
+                                            if (stone[y2+1][x2] || brick[y2+1][x2] || isBomb[y2+1][x2] || isSprite[y2+1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2+1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 3) {
+                                            if (stone[y2][x2-1] || brick[y2][x2-1] || isBomb[y2][x2-1] || isSprite[y2][x2-1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2-1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else {
+                                            if (stone[y2][x2+1] || brick[y2][x2+1] || isBomb[y2][x2+1] || isSprite[y2][x2+1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2+1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        }
+                                        if (safeRoute) {
+                                        routeThree = 5
+                                        } else {
+                                            y3 = false
+                                        }
+                                    }
+                                }
+                            }
+                        } else if (routeTwo == 2) {
+                            if (stone[y1+1][x1] || brick[y1+1][x1] || isBomb[y1+1][x1] || isSprite[y1+1][x1]) {
+                                simCount++
+                                console.log(simCount)
+                            } else {
+                                console.log('work')
+                                y2 = y1+1
+                                x2 = x1
+                                if (!isDanger[y2][x2]) {
+                                    safeRoute = true
+                                } else {
+                                    for (let routeThree = 1; routeThree <= 4; routeThree++) {
+                                        if (routeThree == 1) {
+                                            if (stone[y2-1][x2] || brick[y2-1][x2] || isBomb[y2-1][x2] || isSprite[y2-1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2-1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 2) {
+                                            if (stone[y2+1][x2] || brick[y2+1][x2] || isBomb[y2+1][x2] || isSprite[y2+1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2+1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 3) {
+                                            if (stone[y2][x2-1] || brick[y2][x2-1] || isBomb[y2][x2-1] || isSprite[y2][x2-1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2-1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else {
+                                            if (stone[y2][x2+1] || brick[y2][x2+1] || isBomb[y2][x2+1] || isSprite[y2][x2+1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2+1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        }
+                                        if (safeRoute) {
+                                        routeThree = 5
+                                        } else {
+                                            y3 = false
+                                        }
+                                    }
+                                }
+                            }
+                        } else if (routeTwo == 3) {
+                            if (stone[y1][x1-1] || brick[y1][x1-1] || isBomb[y1][x1-1] || isSprite[y1][x1-1]) {
+                                simCount++
+                                console.log(simCount)
+                            } else {
+                                console.log('work')
+                                y2 = y1
+                                x2 = x1-1
+                                if (!isDanger[y2][x2]) {
+                                    safeRoute = true
+                                } else {
+                                    for (let routeThree = 1; routeThree <= 4; routeThree++) {
+                                        if (routeThree == 1) {
+                                            if (stone[y2-1][x2] || brick[y2-1][x2] || isBomb[y2-1][x2] || isSprite[y2-1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2-1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 2) {
+                                            if (stone[y2+1][x2] || brick[y2+1][x2] || isBomb[y2+1][x2] || isSprite[y2+1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2+1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 3) {
+                                            if (stone[y2][x2-1] || brick[y2][x2-1] || isBomb[y2][x2-1] || isSprite[y2][x2-1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2-1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else {
+                                            if (stone[y2][x2+1] || brick[y2][x2+1] || isBomb[y2][x2+1] || isSprite[y2][x2+1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2+1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        }
+                                        if (safeRoute) {
+                                        routeThree = 5
+                                        } else {
+                                            y3 = false
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            if (stone[y1][x1+1] || brick[y1][x1+1] || isBomb[y1][x1+1] || isSprite[y1][x1+1]) {
+                                simCount++
+                                console.log(simCount)
+                            } else {
+                                console.log('work')
+                                y2 = y1
+                                x2 = x1+1
+                                if (!isDanger[y2][x2]) {
+                                    safeRoute = true
+                                } else {
+                                    for (let routeThree = 1; routeThree <= 4; routeThree++) {
+                                        if (routeThree == 1) {
+                                            if (stone[y2-1][x2] || brick[y2-1][x2] || isBomb[y2-1][x2] || isSprite[y2-1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2-1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 2) {
+                                            if (stone[y2+1][x2] || brick[y2+1][x2] || isBomb[y2+1][x2] || isSprite[y2+1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2+1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 3) {
+                                            if (stone[y2][x2-1] || brick[y2][x2-1] || isBomb[y2][x2-1] || isSprite[y2][x2-1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2-1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else {
+                                            if (stone[y2][x2+1] || brick[y2][x2+1] || isBomb[y2][x2+1] || isSprite[y2][x2+1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2+1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        }
+                                        if (safeRoute) {
+                                        routeThree = 5
+                                        } else {
+                                            y3 = false
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (safeRoute) {
+                            routeTwo = 5
+                        }
+                    }
+
+                }
+            } else {
+                if (stone[this.yPos][this.xPos+1] || brick[this.yPos][this.xPos+1] || isBomb[this.yPos][this.xPos+1] || isSprite[this.yPos][this.xPos+1]) {
+                    simCount++
+                    console.log(simCount)
+                } else {
+                    console.log('work')
+                    y1 = this.yPos
+                    x1 = this.xPos+1
+                    for (let routeTwo = 1; routeTwo <= 4; routeTwo++) {
+                        if (routeTwo == 1) {
+                            if (stone[y1-1][x1] || brick[y1-1][x1] || isBomb[y1-1][x1] || isSprite[y1-1][x1]) {
+                                simCount++
+                                console.log(simCount)
+                            } else {
+                                console.log('work')
+                                y2 = y1-1
+                                x2 = x1
+                                if (!isDanger[y2][x2]) {
+                                    safeRoute = true
+                                } else {
+                                    for (let routeThree = 1; routeThree <= 4; routeThree++) {
+                                        if (routeThree == 1) {
+                                            if (stone[y2-1][x2] || brick[y2-1][x2] || isBomb[y2-1][x2] || isSprite[y2-1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2-1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 2) {
+                                            if (stone[y2+1][x2] || brick[y2+1][x2] || isBomb[y2+1][x2] || isSprite[y2+1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2+1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 3) {
+                                            if (stone[y2][x2-1] || brick[y2][x2-1] || isBomb[y2][x2-1] || isSprite[y2][x2-1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2-1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else {
+                                            if (stone[y2][x2+1] || brick[y2][x2+1] || isBomb[y2][x2+1] || isSprite[y2][x2+1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2+1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        }
+                                        if (safeRoute) {
+                                        routeThree = 5
+                                        } else {
+                                            y3 = false
+                                        }
+                                    }
+                                }
+                            }
+                        } else if (routeTwo == 2) {
+                            if (stone[y1+1][x1] || brick[y1+1][x1] || isBomb[y1+1][x1] || isSprite[y1+1][x1]) {
+                                simCount++
+                                console.log(simCount)
+                            } else {
+                                console.log('work')
+                                y2 = y1+1
+                                x2 = x1
+                                if (!isDanger[y2][x2]) {
+                                    safeRoute = true
+                                } else {
+                                    for (let routeThree = 1; routeThree <= 4; routeThree++) {
+                                        if (routeThree == 1) {
+                                            if (stone[y2-1][x2] || brick[y2-1][x2] || isBomb[y2-1][x2] || isSprite[y2-1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2-1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 2) {
+                                            if (stone[y2+1][x2] || brick[y2+1][x2] || isBomb[y2+1][x2] || isSprite[y2+1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2+1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 3) {
+                                            if (stone[y2][x2-1] || brick[y2][x2-1] || isBomb[y2][x2-1] || isSprite[y2][x2-1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2-1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else {
+                                            if (stone[y2][x2+1] || brick[y2][x2+1] || isBomb[y2][x2+1] || isSprite[y2][x2+1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2+1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        }
+                                        if (safeRoute) {
+                                        routeThree = 5
+                                        } else {
+                                            y3 = false
+                                        }
+                                    }
+                                }
+                            }
+                        } else if (routeTwo == 3) {
+                            if (stone[y1][x1-1] || brick[y1][x1-1] || isBomb[y1][x1-1] || isSprite[y1][x1-1]) {
+                                simCount++
+                                console.log(simCount)
+                            } else {
+                                console.log('work')
+                                y2 = y1
+                                x2 = x1-1
+                                if (!isDanger[y2][x2]) {
+                                    safeRoute = true
+                                } else {
+                                    for (let routeThree = 1; routeThree <= 4; routeThree++) {
+                                        if (routeThree == 1) {
+                                            if (stone[y2-1][x2] || brick[y2-1][x2] || isBomb[y2-1][x2] || isSprite[y2-1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2-1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 2) {
+                                            if (stone[y2+1][x2] || brick[y2+1][x2] || isBomb[y2+1][x2] || isSprite[y2+1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2+1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 3) {
+                                            if (stone[y2][x2-1] || brick[y2][x2-1] || isBomb[y2][x2-1] || isSprite[y2][x2-1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2-1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else {
+                                            if (stone[y2][x2+1] || brick[y2][x2+1] || isBomb[y2][x2+1] || isSprite[y2][x2+1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2+1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        }
+                                        if (safeRoute) {
+                                        routeThree = 5
+                                        } else {
+                                            y3 = false
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            if (stone[y1][x1+1] || brick[y1][x1+1] || isBomb[y1][x1+1] || isSprite[y1][x1+1]) {
+                                simCount++
+                                console.log(simCount)
+                            } else {
+                                console.log('work')
+                                y2 = y1
+                                x2 = x1+1
+                                if (!isDanger[y2][x2]) {
+                                    safeRoute = true
+                                } else {
+                                    for (let routeThree = 1; routeThree <= 4; routeThree++) {
+                                        if (routeThree == 1) {
+                                            if (stone[y2-1][x2] || brick[y2-1][x2] || isBomb[y2-1][x2] || isSprite[y2-1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2-1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 2) {
+                                            if (stone[y2+1][x2] || brick[y2+1][x2] || isBomb[y2+1][x2] || isSprite[y2+1][x2]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2+1
+                                                x3 = x2
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else if (routeThree == 3) {
+                                            if (stone[y2][x2-1] || brick[y2][x2-1] || isBomb[y2][x2-1] || isSprite[y2][x2-1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2-1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        } else {
+                                            if (stone[y2][x2+1] || brick[y2][x2+1] || isBomb[y2][x2+1] || isSprite[y2][x2+1]) {
+                                                simCount++
+                                                console.log(simCount)
+                                            } else {
+                                                console.log('work')
+                                                y3 = y2
+                                                x3 = x2+1
+                                                if(!isDanger[y3][x3]) {
+                                                    safeRoute = true
+                                                }
+                                            }
+                                        }
+                                        if (safeRoute) {
+                                        routeThree = 5
+                                        } else {
+                                            y3 = false
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (safeRoute) {
+                            routeTwo = 5
+                        }
+                    }
+                }
+            }
+            if (safeRoute) {
+                routeOne = 5
+            }
+        }
+        console.log(safeRoute)
+        if (safeRoute) {
+            this.placeBombDown()
+            this.moveRoute(y1, x1)
+            setTimeout(() => this.moveRoute(y2, x2), 500)
+            if (y3 != false) {
+                setTimeout(() => this.moveRoute(y3, x3), 1000)
+            }
+            // setTimeout(() => this.randNumber(), 1500)
+            setTimeout(() => this.removeDanger(), 2850)
         } else {
-            this.right = true
-            this.left = true
-            this.down = true
-            this.up = true
-            this.moveSprite()
+            isDanger.pop()
+            // this.randNumber()
         }
     }
 
-    isTrapped () {
-        if (isSprite[this.yPos][this.xPos+1] || isSprite[this.yPos][this.xPos-1] || isSprite[this.yPos+1][this.xPos] || isSprite[this.yPos-1][this.xPos]) {
-            setTimeout(() => {this.isTrapped()}, 500)
-        } else {
-            setTimeout(() => {this.randNumber()}, 200)
-        }
-    }
-
-    moveSprite () {
+    moveRoute(yMove, xMove) {
+        console.log(xMove)
         isSprite[this.yPos][this.xPos] = false
-        if (this.direction == 1) {
-            this.yPos--
-            // this.placeBombDown()
-        } else if (this.direction == 2) {
-            this.yPos++
-        } else if (this.direction == 3) {
-            this.xPos--
-        } else {
-            this.xPos++
-        }
-        isSprite[this.yPos][this.xPos] = true
+        this.yPos = yMove
+        this.xPos = xMove
         this.enemy.removeChild(this.sprite)
         this.enemy = boxes[this.yPos][this.xPos]
         this.enemy.appendChild(this.sprite)
-        if (!playerDead) {
-            setTimeout(() => {this.randNumber()}, 500)
-        }
+        isSprite[this.yPos][this.xPos] = true
     }
 
+    removeDanger () {
+        for (let s = 0; s< dangerContainer[0].length; s++) {
+            isDanger[dangerContainer[0][s][0]][dangerContainer[0][s][1]] = false
+        }
+        dangerContainer.shift()
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     placeBombDown () {
         this.canBomb = false
         if (this.bombCount > 0 && !isBomb[this.yPos][this.xPos]) {
@@ -407,7 +1692,7 @@ function createBoard () {
 
 let enemyOne = new Enemy('white', 13, 13)
 enemyOne.appendSprite()
-enemyOne.randNumber()
+enemyOne.testBomb()
 
 function checkForFire () {
     for (let check = 0; check < isFire.length; check++) {
