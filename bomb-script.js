@@ -30,42 +30,6 @@ class Bomb {
         this.fireIndex = 0
     }
 
-    // simulateExplosion () {
-    //     dangerIndex.push([this.bombY, this.bombX])
-    //     isDanger[this.bombY][this.bombX] = true
-    //     if (!stone[this.bombY-1][this.bombX]) {
-    //         dangerIndex.push([this.bombY-1, this.bombX])
-    //         isDanger[this.bombY-1][this.bombX] = true
-    //         if (!stone[this.bombY-2][this.bombX] && !brick[this.bombY-1][this.bombX]) {
-    //             dangerIndex.push([this.bombY-2, this.bombX])
-    //             isDanger[this.bombY-2][this.bombX] = true
-    //         }
-    //     } if (!stone[this.bombY+1][this.bombX]) {
-    //         dangerIndex.push([this.bombY+1, this.bombX])
-    //         isDanger[this.bombY+1][this.bombX] = true
-    //         if (!stone[this.bombY+2][this.bombX] && !brick[this.bombY+1][this.bombX]) {
-    //             dangerIndex.push([this.bombY+2, this.bombX])
-    //             isDanger[this.bombY+2][this.bombX] = true
-    //         }
-    //     } if (!stone[this.bombY][this.bombX+1]) {
-    //         dangerIndex.push([this.bombY, this.bombX+1])
-    //         isDanger[this.bombY][this.bombX+1] = true
-    //         if (!stone[this.bombY][this.bombX+2] && !brick[this.bombY][this.bombX+1]) {
-    //             dangerIndex.push([this.bombY, this.bombX+2])
-    //             isDanger[this.bombY][this.bombX+2] = true
-    //         }
-    //     } if (!stone[this.bombY][this.bombX-1]) {
-    //         dangerIndex.push([this.bombY, this.bombX-1])
-    //         isDanger[this.bombY][this.bombX-1] = true
-    //         if (!stone[this.bombY][this.bombX-2] && !brick[this.bombY][this.bombX-1]) {
-    //             dangerIndex.push([this.bombY, this.bombX-2])
-    //             isDanger[this.bombY][this.bombX-2] = true
-    //         }
-    //     }
-    //     dangerContainer.push(dangerIndex)
-    //     dangerIndex = []
-    // }
-
     placeBomb () {
         boxes[this.bombY][this.bombX].classList.add('bomb-black')
     }
@@ -149,6 +113,7 @@ class Enemy {
         this.color = color
         this.yPos = y
         this.xPos = x
+        this.dead = false
         this.direction = 0
         this.up = true
         this.down = true
@@ -156,7 +121,8 @@ class Enemy {
         this.right = true
         this.canMove = false
         this.canBomb = false
-        this.bombCount = 2
+        this.bombCount = 1
+        this.isStillSafe = true
         this.enemy = boxes[this.yPos][this.xPos]
         this.sprite = document.createElement('img')
         this.sprite.src = `sprites/${this.color}-sprite/${this.color}_down/${this.color}-standing-down.png`
@@ -167,132 +133,134 @@ class Enemy {
         this.enemy.appendChild(this.sprite)
     }
 
-    // randNumber () {
-    //     this.canMove = false
-    //     this.up = true
-    //     this.down = true
-    //     this.left = true
-    //     this.right = true
-    //     this.direction = Math.ceil(Math.random() * 4)
-    //     if (!isDanger[this.yPos][this.xPos]) {
-    //         while(!this.canMove) {
-    //             if (this.direction == 1) {
-    //                 if (stone[this.yPos-1][this.xPos] || brick[this.yPos-1][this.xPos] || isBomb[this.yPos-1][this.xPos] || isSprite[this.yPos-1][this.xPos] || isDanger[this.yPos-1][this.xPos]) {
-    //                     this.direction = Math.ceil(Math.random() * 4)
-    //                     this.up = false
-    //                 } else {
-    //                     this.canMove = true
-    //                 }
-    //             } else if (this.direction == 2) {
-    //                 if (stone[this.yPos+1][this.xPos] || brick[this.yPos+1][this.xPos] || isBomb[this.yPos+1][this.xPos] || isSprite[this.yPos+1][this.xPos] || isDanger[this.yPos+1][this.xPos]) {
-    //                     this.direction = Math.ceil(Math.random() * 4)
-    //                     this.down = false
-    //                 } else {
-    //                     this.canMove = true
-    //                 }
-    //             } else if (this.direction == 3) {
-    //                 if (stone[this.yPos][this.xPos-1] || brick[this.yPos][this.xPos-1] || isBomb[this.yPos][this.xPos-1] || isSprite[this.yPos][this.xPos-1] || isDanger[this.yPos][this.xPos-1]) {
-    //                     this.direction = Math.ceil(Math.random() * 4)
-    //                     this.left = false
-    //                 } else {
-    //                     this.canMove = true
-    //                 }
-    //             } else {
-    //                 if (stone[this.yPos][this.xPos+1] || brick[this.yPos][this.xPos+1] || isBomb[this.yPos][this.xPos+1] || isSprite[this.yPos][this.xPos+1] || isDanger[this.yPos][this.xPos+1]) {
-    //                     this.direction = Math.ceil(Math.random() * 4)
-    //                     this.right = false
-    //                 } else {
-    //                     this.canMove = true
-    //                 }
-    //             }
-    //             if (!this.right && !this.left && !this.down && !this.up) {
-    //                 this.canMove = true
-    //             }
-    //         }
-    //     } else {
-    //         while(!this.canMove) {
-    //             if (this.direction == 1) {
-    //                 if (stone[this.yPos-1][this.xPos] || brick[this.yPos-1][this.xPos] || isBomb[this.yPos-1][this.xPos] || isSprite[this.yPos-1][this.xPos]) {
-    //                     this.direction = Math.ceil(Math.random() * 4)
-    //                     this.up = false
-    //                 } else {
-    //                     this.canMove = true
-    //                 }
-    //             } else if (this.direction == 2) {
-    //                 if (stone[this.yPos+1][this.xPos] || brick[this.yPos+1][this.xPos] || isBomb[this.yPos+1][this.xPos] || isSprite[this.yPos+1][this.xPos]) {
-    //                     this.direction = Math.ceil(Math.random() * 4)
-    //                     this.down = false
-    //                 } else {
-    //                     this.canMove = true
-    //                 }
-    //             } else if (this.direction == 3) {
-    //                 if (stone[this.yPos][this.xPos-1] || brick[this.yPos][this.xPos-1] || isBomb[this.yPos][this.xPos-1] || isSprite[this.yPos][this.xPos-1]) {
-    //                     this.direction = Math.ceil(Math.random() * 4)
-    //                     this.left = false
-    //                 } else {
-    //                     this.canMove = true
-    //                 }
-    //             } else {
-    //                 if (stone[this.yPos][this.xPos+1] || brick[this.yPos][this.xPos+1] || isBomb[this.yPos][this.xPos+1] || isSprite[this.yPos][this.xPos+1]) {
-    //                     this.direction = Math.ceil(Math.random() * 4)
-    //                     this.right = false
-    //                 } else {
-    //                     this.canMove = true
-    //                 }
-    //             }
-    //             if (!this.right && !this.left && !this.down && !this.up) {
-    //                 this.canMove = true
-    //             }
-    //         }
-    //     }
-    //     if (!this.right && !this.left && !this.down && !this.up) {
-    //         this.isTrapped()
-    //     } else {
-    //         this.right = true
-    //         this.left = true
-    //         this.down = true
-    //         this.up = true
-    //         this.moveSprite()
-    //     }
-    // }
+    randNumber () {
+        if (!this.dead) {
+            this.canMove = false
+            this.up = true
+            this.down = true
+            this.left = true
+            this.right = true
+            this.direction = Math.ceil(Math.random() * 4)
+            if (!isDanger[this.yPos][this.xPos]) {
+                while(!this.canMove) {
+                    if (this.direction == 1) {
+                        if (stone[this.yPos-1][this.xPos] || brick[this.yPos-1][this.xPos] || isBomb[this.yPos-1][this.xPos] || isSprite[this.yPos-1][this.xPos] || isDanger[this.yPos-1][this.xPos]) {
+                            this.direction = Math.ceil(Math.random() * 4)
+                            this.up = false
+                        } else {
+                            this.canMove = true
+                        }
+                    } else if (this.direction == 2) {
+                        if (stone[this.yPos+1][this.xPos] || brick[this.yPos+1][this.xPos] || isBomb[this.yPos+1][this.xPos] || isSprite[this.yPos+1][this.xPos] || isDanger[this.yPos+1][this.xPos]) {
+                            this.direction = Math.ceil(Math.random() * 4)
+                            this.down = false
+                        } else {
+                            this.canMove = true
+                        }
+                    } else if (this.direction == 3) {
+                        if (stone[this.yPos][this.xPos-1] || brick[this.yPos][this.xPos-1] || isBomb[this.yPos][this.xPos-1] || isSprite[this.yPos][this.xPos-1] || isDanger[this.yPos][this.xPos-1]) {
+                            this.direction = Math.ceil(Math.random() * 4)
+                            this.left = false
+                        } else {
+                            this.canMove = true
+                        }
+                    } else {
+                        if (stone[this.yPos][this.xPos+1] || brick[this.yPos][this.xPos+1] || isBomb[this.yPos][this.xPos+1] || isSprite[this.yPos][this.xPos+1] || isDanger[this.yPos][this.xPos+1]) {
+                            this.direction = Math.ceil(Math.random() * 4)
+                            this.right = false
+                        } else {
+                            this.canMove = true
+                        }
+                    }
+                    if (!this.right && !this.left && !this.down && !this.up) {
+                        this.canMove = true
+                    }
+                }
+            } else {
+                while(!this.canMove) {
+                    if (this.direction == 1) {
+                        if (stone[this.yPos-1][this.xPos] || brick[this.yPos-1][this.xPos] || isBomb[this.yPos-1][this.xPos] || isSprite[this.yPos-1][this.xPos]) {
+                            this.direction = Math.ceil(Math.random() * 4)
+                            this.up = false
+                        } else {
+                            this.canMove = true
+                        }
+                    } else if (this.direction == 2) {
+                        if (stone[this.yPos+1][this.xPos] || brick[this.yPos+1][this.xPos] || isBomb[this.yPos+1][this.xPos] || isSprite[this.yPos+1][this.xPos]) {
+                            this.direction = Math.ceil(Math.random() * 4)
+                            this.down = false
+                        } else {
+                            this.canMove = true
+                        }
+                    } else if (this.direction == 3) {
+                        if (stone[this.yPos][this.xPos-1] || brick[this.yPos][this.xPos-1] || isBomb[this.yPos][this.xPos-1] || isSprite[this.yPos][this.xPos-1]) {
+                            this.direction = Math.ceil(Math.random() * 4)
+                            this.left = false
+                        } else {
+                            this.canMove = true
+                        }
+                    } else {
+                        if (stone[this.yPos][this.xPos+1] || brick[this.yPos][this.xPos+1] || isBomb[this.yPos][this.xPos+1] || isSprite[this.yPos][this.xPos+1]) {
+                            this.direction = Math.ceil(Math.random() * 4)
+                            this.right = false
+                        } else {
+                            this.canMove = true
+                        }
+                    }
+                    if (!this.right && !this.left && !this.down && !this.up) {
+                        this.canMove = true
+                    }
+                }
+            }
+            if (!this.right && !this.left && !this.down && !this.up) {
+                this.isTrapped()
+            } else {
+                this.right = true
+                this.left = true
+                this.down = true
+                this.up = true
+                this.moveSprite()
+            }
+        }
+    }
 
-    // isTrapped () {
-    //     if (isSprite[this.yPos][this.xPos+1] || isSprite[this.yPos][this.xPos-1] || isSprite[this.yPos+1][this.xPos] || isSprite[this.yPos-1][this.xPos]) {
-    //         setTimeout(() => {this.isTrapped()}, 500)
-    //     } else {
-    //         setTimeout(() => {this.randNumber()}, 200)
-    //     }
-    // }
+    isTrapped () {
+        if (isSprite[this.yPos][this.xPos+1] || isSprite[this.yPos][this.xPos-1] || isSprite[this.yPos+1][this.xPos] || isSprite[this.yPos-1][this.xPos]) {
+            if (!this.dead) {
+                setTimeout(() => {this.isTrapped()}, 500)
+            }
+        } else {
+            setTimeout(() => {this.randNumber()}, 200)
+        }
+    }
 
-    // moveSprite () {
-    //     isSprite[this.yPos][this.xPos] = false
-    //     if (this.direction == 1) {
-    //         this.yPos--
-    //         // this.placeBombDown()
-    //     } else if (this.direction == 2) {
-    //         this.yPos++
-    //     } else if (this.direction == 3) {
-    //         this.xPos--
-    //     } else {
-    //         this.xPos++
-    //     }
-    //     isSprite[this.yPos][this.xPos] = true
-    //     this.enemy.removeChild(this.sprite)
-    //     this.enemy = boxes[this.yPos][this.xPos]
-    //     this.enemy.appendChild(this.sprite)
-    //     this.testBomb()
-    // }
+    moveSprite () {
+        isSprite[this.yPos][this.xPos] = false
+        if (this.direction == 1) {
+            this.yPos--
+        } else if (this.direction == 2) {
+            this.yPos++
+        } else if (this.direction == 3) {
+            this.xPos--
+        } else {
+            this.xPos++
+        }
+        isSprite[this.yPos][this.xPos] = true
+        this.enemy.removeChild(this.sprite)
+        this.enemy = boxes[this.yPos][this.xPos]
+        this.enemy.appendChild(this.sprite)
+        this.testBomb()
+    }
 
     testBomb () {
         let willBomb = Math.ceil(Math.random() * 4)
-        if (willBomb < 10) {
+        if (willBomb == 4 && this.bombCount > 0) {
             this.simulateExplosion()
+        } else {
+            if (!playerDead && !this.dead) {
+                setTimeout(() => {this.randNumber()}, 500)
+            }
         }
-        // } else {
-        //     if (!playerDead) {
-        //         setTimeout(() => {this.randNumber()}, 500)
-        //     }
-        // }
     }
 
     simulateExplosion () {
@@ -329,6 +297,9 @@ class Enemy {
         }
         dangerContainer.push(dangerIndex)
         dangerIndex = []
+        for (let tester = 0; tester < dangerContainer.length; tester++) {
+            console.log(dangerContainer[tester])
+        }
         this.simulateRoute()
     }
 
@@ -1517,64 +1488,59 @@ class Enemy {
                 routeOne = 5
             }
         }
-        console.log(safeRoute)
         if (safeRoute) {
+            console.log('SAFE')
             this.placeBombDown()
-            this.moveRoute(y1, x1)
-            setTimeout(() => this.moveRoute(y2, x2), 500)
+            setTimeout(() => this.moveRoute(y1, x1), 500)
+            setTimeout(() => this.moveRoute(y2, x2), 1000)
             if (y3 != false) {
-                setTimeout(() => this.moveRoute(y3, x3), 1000)
+                setTimeout(() => this.moveRoute(y3, x3), 1500)
             }
-            // setTimeout(() => this.randNumber(), 1500)
-            setTimeout(() => this.removeDanger(), 2850)
+            setTimeout(() => this.setSafe(), 2000)
+            setTimeout(() => this.randNumber(), 2000)
+            setTimeout(() => this.removeDanger(), 2900)
         } else {
-            isDanger.pop()
-            // this.randNumber()
+            let dLength = dangerContainer.length - 1
+            for (let s = 0; s < dangerContainer[dLength].length; s++) {
+                isDanger[dangerContainer[dLength][s][0]][dangerContainer[dLength][s][1]] = false
+            }
+            dangerContainer.pop()
+            console.log('NOT SAFE')
+            for (let tester = 0; tester < dangerContainer.length; tester++) {
+                console.log(dangerContainer[tester])
+            }
+            this.randNumber()
         }
     }
 
     moveRoute(yMove, xMove) {
-        console.log(xMove)
-        isSprite[this.yPos][this.xPos] = false
-        this.yPos = yMove
-        this.xPos = xMove
-        this.enemy.removeChild(this.sprite)
-        this.enemy = boxes[this.yPos][this.xPos]
-        this.enemy.appendChild(this.sprite)
-        isSprite[this.yPos][this.xPos] = true
+        if (this.isStillSafe && (stone[yMove][xMove] || brick[yMove][xMove] || isBomb[yMove][xMove] || isSprite[yMove][xMove])) {
+            this.isStillSafe = false
+        }
+        if (this.isStillSafe) {
+            isSprite[this.yPos][this.xPos] = false
+            this.yPos = yMove
+            this.xPos = xMove
+            this.enemy.removeChild(this.sprite)
+            this.enemy = boxes[this.yPos][this.xPos]
+            this.enemy.appendChild(this.sprite)
+            isSprite[this.yPos][this.xPos] = true
+        }
+    }
+
+    setSafe () {
+        this.isStillSafe = true
     }
 
     removeDanger () {
-        for (let s = 0; s< dangerContainer[0].length; s++) {
+        console.log('remove danger')
+        for (let s = 0; s < dangerContainer[0].length; s++) {
             isDanger[dangerContainer[0][s][0]][dangerContainer[0][s][1]] = false
         }
         dangerContainer.shift()
+        console.log(dangerContainer)
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     placeBombDown () {
         this.canBomb = false
         if (this.bombCount > 0 && !isBomb[this.yPos][this.xPos]) {
@@ -1692,7 +1658,15 @@ function createBoard () {
 
 let enemyOne = new Enemy('white', 13, 13)
 enemyOne.appendSprite()
-enemyOne.testBomb()
+enemyOne.randNumber()
+
+let enemyTwo = new Enemy('white', 13, 1)
+setTimeout(() => enemyTwo.appendSprite(), 10)
+setTimeout(() => enemyTwo.randNumber(), 10)
+
+let enemyThree = new Enemy('white', 1, 13)
+setTimeout(() => enemyThree.appendSprite(), 20)
+setTimeout(() => enemyThree.randNumber(), 20)
 
 function checkForFire () {
     for (let check = 0; check < isFire.length; check++) {
@@ -1701,10 +1675,34 @@ function checkForFire () {
         if (yPos == fireY && xPos == fireX) {
             playerDead = true
         }
+        if (enemyOne.yPos == fireY && enemyOne.xPos == fireX) {
+            enemyOne.dead = true
+            enemyOne.isStillSafe = false
+            console.log('DEAD')
+            console.log(isDanger[enemyOne.yPos][enemyOne.xPos])
+            console.log(enemyOne.yPos, enemyOne.xPos)
+        }
+        if (enemyTwo.yPos == fireY && enemyTwo.xPos == fireX) {
+            enemyTwo.dead = true
+            enemyTwo.isStillSafe = false
+            console.log('DEAD')
+            console.log(isDanger[enemyTwo.yPos][enemyTwo.xPos])
+            console.log(enemyTwo.yPos, enemyTwo.xPos)
+        }
+        if (enemyThree.yPos == fireY && enemyThree.xPos == fireX) {
+            enemyThree.dead = true
+            enemyThree.isStillSafe = false
+            console.log('DEAD')
+            console.log(isDanger[enemyThree.yPos][enemyThree.xPos])
+            console.log(enemyThree.yPos, enemyThree.xPos)
+        }
         if (brick[fireY][fireX]) {
             brick[fireY][fireX] = false
             boxes[fireY][fireX].classList.remove('brick')
             boxes[fireY][fireX].classList.add('grass')
+        }
+        if (enemyOne.dead && enemyTwo.dead && enemyThree.dead) {
+            alert('YOU WON!')
         }
     }
     if (playerDead) {
