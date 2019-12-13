@@ -1,4 +1,7 @@
 const gameBoard = document.querySelector('#game-board')
+const modal = document.querySelector('#modal')
+const message = document.querySelector('h2')
+
 let boxes = []
 let stone = []
 let brick = []
@@ -113,6 +116,8 @@ class Enemy {
         this.color = color
         this.yPos = y
         this.xPos = x
+        this.animationCounter = 1
+        this.direction = 'down'
         this.dead = false
         this.direction = 0
         this.up = true
@@ -234,27 +239,46 @@ class Enemy {
         }
     }
 
+    animateSprite () {
+        if (this.animationCounter == 1) {
+            this.sprite.src = `sprites/${this.color}-sprite/${this.color}_${this.direction}/${this.color}-walking-${this.direction}${this.animationCounter}.png`
+            this.animationCounter = 2
+        } else {
+            this.sprite.src = `sprites/${this.color}-sprite/${this.color}_${this.direction}/${this.color}-walking-${this.direction}${this.animationCounter}.png`
+            this.animationCounter = 1
+        }
+    }
+
     moveSprite () {
         isSprite[this.yPos][this.xPos] = false
         if (this.direction == 1) {
             this.yPos--
+            this.direction = 'up'
         } else if (this.direction == 2) {
             this.yPos++
+            this.direction = 'down'
         } else if (this.direction == 3) {
             this.xPos--
+            this.direction = 'left'
         } else {
             this.xPos++
+            this.direction = 'right'
         }
+        this.animateSprite()
         isSprite[this.yPos][this.xPos] = true
         this.enemy.removeChild(this.sprite)
         this.enemy = boxes[this.yPos][this.xPos]
         this.enemy.appendChild(this.sprite)
-        this.testBomb()
+        if (brick[this.yPos-1][this.xPos] || brick[this.yPos+1][this.xPos] || brick[this.yPos][this.xPos-1] || brick[this.yPos][this.xPos+1]) {
+            this.testBomb()
+        } else {
+            setTimeout(() => this.randNumber(), 500)
+        }
     }
 
     testBomb () {
-        let willBomb = Math.ceil(Math.random() * 4)
-        if (willBomb == 4 && this.bombCount > 0) {
+        let willBomb = Math.ceil(Math.random() * 2)
+        if (willBomb == 2 && this.bombCount > 0) {
             this.simulateExplosion()
         } else {
             if (!playerDead && !this.dead) {
@@ -1519,6 +1543,16 @@ class Enemy {
         }
         if (this.isStillSafe) {
             isSprite[this.yPos][this.xPos] = false
+            if (this.yPos > yMove) {
+                this.direction = 'up'
+            } if (this.yPos < yMove) {
+                this.direction = 'down'
+            } if (this.xPos > xMove) {
+                this.direction = 'left'
+            } if (this.xPos < xMove) {
+                this.direction = 'right'
+            }
+            this.animateSprite()
             this.yPos = yMove
             this.xPos = xMove
             this.enemy.removeChild(this.sprite)
@@ -1533,7 +1567,6 @@ class Enemy {
     }
 
     removeDanger () {
-        console.log('remove danger')
         for (let s = 0; s < dangerContainer[0].length; s++) {
             isDanger[dangerContainer[0][s][0]][dangerContainer[0][s][1]] = false
         }
@@ -1678,23 +1711,14 @@ function checkForFire () {
         if (enemyOne.yPos == fireY && enemyOne.xPos == fireX) {
             enemyOne.dead = true
             enemyOne.isStillSafe = false
-            console.log('DEAD')
-            console.log(isDanger[enemyOne.yPos][enemyOne.xPos])
-            console.log(enemyOne.yPos, enemyOne.xPos)
         }
         if (enemyTwo.yPos == fireY && enemyTwo.xPos == fireX) {
             enemyTwo.dead = true
             enemyTwo.isStillSafe = false
-            console.log('DEAD')
-            console.log(isDanger[enemyTwo.yPos][enemyTwo.xPos])
-            console.log(enemyTwo.yPos, enemyTwo.xPos)
         }
         if (enemyThree.yPos == fireY && enemyThree.xPos == fireX) {
             enemyThree.dead = true
             enemyThree.isStillSafe = false
-            console.log('DEAD')
-            console.log(isDanger[enemyThree.yPos][enemyThree.xPos])
-            console.log(enemyThree.yPos, enemyThree.xPos)
         }
         if (brick[fireY][fireX]) {
             brick[fireY][fireX] = false
@@ -1702,7 +1726,7 @@ function checkForFire () {
             boxes[fireY][fireX].classList.add('grass')
         }
         if (enemyOne.dead && enemyTwo.dead && enemyThree.dead) {
-            alert('YOU WON!')
+            showModal()
         }
     }
     if (playerDead) {
@@ -1710,6 +1734,15 @@ function checkForFire () {
             killPlayer()
             isDeadAnimation = true
         }
+    }
+}
+
+function showModal () {
+    modal.style.display = 'block'
+    if (playerDead) {
+        message.textContent = 'Oh well. Try again?'
+    } else {
+        message.textContent = 'You win! Congrats!'
     }
 }
 
@@ -1722,6 +1755,7 @@ function killPlayer () {
         setTimeout(killPlayer, 100)
     } else {
         player.removeChild(playerSprite)
+        setTimeout(showModal, 500)
     }
 }
 
