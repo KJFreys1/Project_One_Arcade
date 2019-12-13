@@ -188,7 +188,7 @@ function killPlayer () {
         setTimeout(killPlayer, 100)
     } else {
         player.removeChild(playerSprite)
-        setTimeout(showModal, 500)
+        setTimeout(showModal, 200)
     }
 }
 
